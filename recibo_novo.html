@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Recibo - AD ADESIVOS</title>
+<style>
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --primary:#ffcc00;
+    --danger:#dc2626;
+    --ok:#16a34a;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);}
+  .wrap{max-width:980px;margin:24px auto 40px;padding:0 14px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:.2px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 0 rgba(17,24,39,.03)}
+  .card h2{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+  input,textarea,select{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;outline:none;font-size:14px;background:#fff
+  }
+  input:focus,textarea:focus,select:focus{border-color:#cbd5e1;box-shadow:0 0 0 3px rgba(17,24,39,.06)}
+  textarea{min-height:92px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:560px){.row{grid-template-columns:1fr}}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:860px){.row3{grid-template-columns:1fr}}
+  .logoRow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logoBox{width:120px;height:72px;border:1px dashed #cbd5e1;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
+  .logoBox img{width:100%;height:100%;object-fit:contain}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer;width:100%}
+  .btnPrimary{background:var(--primary);color:#111}
+  .btnGhost{background:#fff;color:#111;border:1px solid var(--line)}
+  .btnSmall{width:auto;padding:10px 12px;border-radius:10px;font-size:13px}
+  .help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+  .error{font-size:12px;color:var(--danger);margin-top:6px;display:none}
+  .error.show{display:block}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .saved .entry{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .saved .meta{font-size:13px;line-height:1.35}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px;margin-top:6px}
+  .entryBtns{display:flex;gap:8px;align-items:center}
+  .link{text-align:center;margin-top:14px}
+  .link a{color:#111;font-weight:900;text-decoration:none}
+
+  /* PRINT */
+  @media print{
+    body{background:#fff}
+    .noPrint{display:none !important}
+    .printArea{display:block !important}
+  }
+  .printArea{display:none}
+  .receipt{
+    width: 190mm;
+    margin: 0 auto;
+    padding: 10mm 10mm;
+    border: 1px solid #111;
+    border-radius: 6px;
+    color:#111;
+    font-size:12px;
+  }
+  .rTop{display:flex;justify-content:space-between;gap:10mm;align-items:flex-start}
+  .rLogo{width:50mm;height:24mm;display:flex;align-items:center;justify-content:flex-start}
+  .rLogo img{max-width:100%;max-height:100%;object-fit:contain}
+  .rTitle{flex:1;text-align:center}
+  .rTitle .t{font-size:16px;font-weight:900}
+  .rTitle .s{font-size:11px;margin-top:2px}
+  .rValue{border:1px solid #111;border-radius:6px;padding:8px 10px;font-weight:900;white-space:nowrap;font-size:14px}
+  .rBody{margin-top:8mm;line-height:1.7}
+  .rSign{margin-top:10mm;display:flex;justify-content:flex-end}
+  .line{margin-top:10mm;border-top:1px solid #111;padding-top:4mm;text-align:center;font-size:11px}
+</style>
+</head>
+<body>
+  <div class="wrap noPrint">
+    <div class="topbar">
+      <h1>RECIBO <span style="font-size:12px; font-weight:900; padding:4px 8px; border:1px solid #e5e7eb; border-radius:999px; background:#fff;">VERSÃO NOVA</span></h1>
+      <div class="pill">AD ADESIVOS • CNPJ 36.837.986/0001-04</div>
+    </div>
+
+    <div class="grid">
+      <!-- ESQUERDA -->
+      <div class="card">
+        <h2>Dados do recibo</h2>
+
+        <label for="titulo">Título do documento</label>
+        <input id="titulo" value="Recibo de Pagamento" />
+        <div class="help">Ex: Recibo de Venda / Recibo de Pagamento.</div>
+
+        <div class="divider"></div>
+
+        <div class="logoRow">
+          <div class="logoBox" title="Logomarca">
+            <img id="logoPreview" alt="Logo" style="display:none" />
+            <div id="logoPlaceholder" style="font-size:12px;color:var(--muted);">LOGO</div>
+          </div>
+          <div style="flex:1; min-width: 200px;">
+            <button class="btn btnGhost btnSmall" id="btnLogo" type="button">Alterar Logo</button>
+            <input id="logoInput" type="file" accept="image/*" style="display:none" />
+            <div class="help">A logo fica salva neste navegador.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="docNum">Nº do documento</label>
+            <input id="docNum" readonly />
+          </div>
+          <div>
+            <label for="valor">Valor do recibo (R$) <span style="color:var(--danger)">*</span></label>
+            <input id="valor" placeholder="Ex: 30,00" />
+            <div class="error" id="errValor">Valor é obrigatório.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="pagador">Pagador <span style="color:var(--danger)">*</span></label>
+            <input id="pagador" placeholder="Nome do pagador" />
+            <div class="error" id="errPagador">Pagador é obrigatório.</div>
+          </div>
+          <div>
+            <label for="pagadorDoc">CPF/CNPJ do pagador <span style="color:var(--danger)">*</span></label>
+            <input id="pagadorDoc" placeholder="CPF/CNPJ" />
+            <div class="error" id="errPagadorDoc">CPF/CNPJ é obrigatório.</div>
+          </div>
+        </div>
+
+        <label for="referente">Referente <span style="color:var(--danger)">*</span></label>
+        <input id="referente" placeholder="Ex: Impressão banner / adesivo / serviço..." />
+        <div class="error" id="errRef">Referente é obrigatório.</div>
+
+        <div class="row3">
+          <div>
+            <label for="forma">Forma de pagamento</label>
+            <select id="forma">
+              <option>Dinheiro</option>
+              <option>Pix</option>
+              <option>Cartão Crédito</option>
+              <option>Cartão Débito</option>
+            </select>
+          </div>
+          <div>
+            <label for="quem">Quem recebeu</label>
+            <input id="quem" placeholder="Nome" />
+          </div>
+          <div>
+            <label for="banco">Banco (opcional)</label>
+            <input id="banco" placeholder="Ex: Nubank / Caixa..." />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="cidade">Cidade</label>
+            <input id="cidade" placeholder="Ex: Santarém" value="Santarém" />
+          </div>
+          <div>
+            <label for="data">Data</label>
+            <input id="data" />
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn btnPrimary" type="button" id="btnSalvar">💾 Salvar recibo</button>
+          <button class="btn btnGhost" type="button" id="btnPDF">📄 Imprimir / PDF</button>
+        </div>
+
+        <button class="btn btnGhost" type="button" id="btnNovo" style="margin-top:10px;">🧾 Novo</button>
+
+        <div class="help" style="margin-top:10px;">
+          Para baixar em PDF: clique em “Imprimir / PDF” e selecione “Salvar como PDF”.
+        </div>
+
+        <div class="link"><a href="index.html">⬅ Voltar ao painel</a></div>
+      </div>
+
+      <!-- DIREITA -->
+      <div class="card">
+        <h2>Recibos salvos</h2>
+        <div class="saved" id="lista"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÁREA DE IMPRESSÃO -->
+  <div class="printArea">
+    <div class="receipt" id="receipt">
+      <div class="rTop">
+        <div class="rLogo">
+          <img id="pLogo" alt="Logo" style="display:none" />
+        </div>
+        <div class="rTitle">
+          <div class="t" id="pTitulo">Recibo de Pagamento</div>
+          <div class="s">
+            AD ADESIVOS • CNPJ 36.837.986/0001-04<br>
+            Av. Moaçara, N° 1290B - Diamantino • WhatsApp: (93) 99138-0733
+          </div>
+        </div>
+        <div class="rValue">R$ <span id="pValor">0,00</span></div>
+      </div>
+
+      <div class="rBody" id="pBody"></div>
+
+      <div class="rSign">
+        <div style="text-align:right;">
+          <div><b id="pCidade">Santarém</b>, <span id="pData">—</span></div>
+        </div>
+      </div>
+
+      <div class="line">
+        <div><b id="pEmissor">AD ADESIVOS</b></div>
+        <div class="small">CNPJ: 36.837.986/0001-04 • (93) 99138-0733</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function onlyDigits(s){ return (s||"").replace(/\D+/g,''); }
+  function formatMoneyBR(n){ if(isNaN(n)) n=0; return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function parseMoneyBR(str){
+    if(!str) return 0;
+    const cleaned = str.toString().replace(/\s/g,'').replace(/R\$/g,'').replace(/\./g,'').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  }
+  function setError(id, show){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.toggle('show', !!show);
+  }
+
+  // Seq
+  function nextRecNumber(){
+    const key = "ad_rec_seq";
+    let seq = parseInt(localStorage.getItem(key) || "2000", 10);
+    seq += 1;
+    localStorage.setItem(key, String(seq));
+    return seq;
+  }
+
+  // Logo
+  const logoInput = document.getElementById('logoInput');
+  const btnLogo = document.getElementById('btnLogo');
+  const logoPreview = document.getElementById('logoPreview');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+
+  btnLogo.addEventListener('click', () => logoInput.click());
+  logoInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      localStorage.setItem('ad_logo', reader.result);
+      renderLogo();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function renderLogo(){
+    const data = localStorage.getItem('ad_logo');
+    if(data){
+      logoPreview.src = data;
+      logoPreview.style.display = "block";
+      logoPlaceholder.style.display = "none";
+    } else {
+      logoPreview.style.display = "none";
+      logoPlaceholder.style.display = "block";
+    }
+  }
+  renderLogo();
+
+  // Date default today (pt-BR)
+  const data = document.getElementById('data');
+  data.value = new Date().toLocaleDateString('pt-BR');
+
+  // Inputs
+  const docNum = document.getElementById('docNum');
+  docNum.value = nextRecNumber();
+
+  const valor = document.getElementById('valor');
+  valor.addEventListener('input', () => { valor.value = valor.value.replace(/[^0-9,\.]/g,''); });
+
+  // Storage
+  function getRecibos(){ return JSON.parse(localStorage.getItem('ad_recibos') || '[]'); }
+  function setRecibos(list){ localStorage.setItem('ad_recibos', JSON.stringify(list)); }
+
+  function validate(){
+    const v = parseMoneyBR(valor.value);
+    const pagador = document.getElementById('pagador').value.trim();
+    const pagadorDoc = document.getElementById('pagadorDoc').value.trim();
+    const ref = document.getElementById('referente').value.trim();
+
+    setError('errValor', !(v > 0));
+    setError('errPagador', !pagador);
+    setError('errPagadorDoc', !pagadorDoc);
+    setError('errRef', !ref);
+
+    return (v > 0) && !!pagador && !!pagadorDoc && !!ref;
+  }
+
+  function collect(){
+    const payload = {
+      id: Date.now(),
+      titulo: document.getElementById('titulo').value.trim() || "Recibo de Pagamento",
+      numero: document.getElementById('docNum').value,
+      valor: parseMoneyBR(document.getElementById('valor').value),
+      pagador: document.getElementById('pagador').value.trim(),
+      pagadorDoc: document.getElementById('pagadorDoc').value.trim(),
+      referente: document.getElementById('referente').value.trim(),
+      forma: document.getElementById('forma').value,
+      quem: document.getElementById('quem').value.trim(),
+      banco: document.getElementById('banco').value.trim(),
+      cidade: document.getElementById('cidade').value.trim() || "—",
+      data: document.getElementById('data').value.trim() || new Date().toLocaleDateString('pt-BR'),
+      createdAt: new Date().toISOString(),
+      emissor: {
+        nome: "AD ADESIVOS",
+        cnpj: "36.837.986/0001-04",
+        telefone: "(93) 99138-0733"
+      }
+    };
+    return payload;
+  }
+
+  function buildPrint(r){
+    document.getElementById('pTitulo').textContent = r.titulo || "Recibo de Pagamento";
+    document.getElementById('pValor').textContent = formatMoneyBR(r.valor || 0);
+
+    const txt = `
+      Recebemos de <b>${r.pagador}</b> - CPF/CNPJ <b>${r.pagadorDoc}</b>, a importância de <b>R$ ${formatMoneyBR(r.valor)}</b>, referente a <b>${r.referente}</b>.<br>
+      Para maior clareza, firmamos o presente recibo, que comprova o recebimento integral do valor mencionado, concedendo <b>quitação plena, geral e irrevogável</b> pela quantia recebida.<br><br>
+      <b>Forma de pagamento:</b> ${r.forma || "—"}<br>
+      <b>Quem recebeu:</b> ${(r.quem || "—")}${r.banco ? (" • <b>Banco:</b> " + r.banco) : ""}<br>
+      <b>Nº do documento:</b> ${r.numero || "—"}
+    `;
+    document.getElementById('pBody').innerHTML = txt;
+    document.getElementById('pCidade').textContent = r.cidade || "—";
+    document.getElementById('pData').textContent = r.data || "—";
+
+    const logo = localStorage.getItem('ad_logo');
+    const pLogo = document.getElementById('pLogo');
+    if(logo){
+      pLogo.src = logo;
+      pLogo.style.display = "block";
+    } else {
+      pLogo.style.display = "none";
+    }
+  }
+
+  function saveReceipt(promptPrint){
+    if(!validate()){
+      alert("Preencha os campos obrigatórios marcados com *");
+      return null;
+    }
+    const payload = collect();
+    const list = getRecibos();
+    list.unshift(payload);
+    setRecibos(list);
+    renderSaved();
+
+    if(promptPrint){
+      const go = confirm("Deseja imprimir/baixar PDF agora?");
+      if(go){
+        buildPrint(payload);
+        window.print();
+      }
+    }
+    return payload;
+  }
+
+  function resetForm(){
+    document.getElementById('titulo').value = "Recibo de Pagamento";
+    document.getElementById('valor').value = "";
+    document.getElementById('pagador').value = "";
+    document.getElementById('pagadorDoc').value = "";
+    document.getElementById('referente').value = "";
+    document.getElementById('forma').value = "Dinheiro";
+    document.getElementById('quem').value = "";
+    document.getElementById('banco').value = "";
+    document.getElementById('cidade').value = "Santarém";
+    document.getElementById('data').value = new Date().toLocaleDateString('pt-BR');
+    docNum.value = nextRecNumber();
+    setError('errValor', false);
+    setError('errPagador', false);
+    setError('errPagadorDoc', false);
+    setError('errRef', false);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.getElementById('btnSalvar').addEventListener('click', () => {
+    const saved = saveReceipt(true);
+    if(saved) alert("Recibo salvo com sucesso!");
+  });
+
+  document.getElementById('btnNovo').addEventListener('click', resetForm);
+
+  document.getElementById('btnPDF').addEventListener('click', () => {
+    if(!validate()){
+      alert("Preencha os campos obrigatórios marcados com *");
+      return;
+    }
+    const payload = collect();
+    buildPrint(payload);
+    window.print();
+  });
+
+  function renderSaved(){
+    const wrap = document.getElementById('lista');
+    const list = getRecibos();
+    if(list.length === 0){
+      wrap.innerHTML = "<div class='help'>Nenhum recibo salvo ainda.</div>";
+      return;
+    }
+    wrap.innerHTML = "";
+    list.slice(0, 20).forEach(r => {
+      const div = document.createElement('div');
+      div.className = "entry";
+      const when = new Date(r.createdAt).toLocaleString('pt-BR');
+      div.innerHTML = `
+        <div class="meta">
+          <strong>#${r.numero}</strong> • ${r.pagador}<br>
+          Valor: <b>R$ ${formatMoneyBR(r.valor)}</b><br>
+          <span class="tag">${when}</span>
+        </div>
+        <div class="entryBtns">
+          <button class="btn btnGhost btnSmall" type="button">Ver</button>
+          <button class="btn btnGhost btnSmall" type="button">PDF</button>
+          <button class="btn btnGhost btnSmall" type="button">Apagar</button>
+        </div>
+      `;
+      const [btnVer, btnPdf, btnDel] = div.querySelectorAll('button');
+
+      btnVer.addEventListener('click', () => {
+        document.getElementById('titulo').value = r.titulo || "Recibo de Pagamento";
+        document.getElementById('docNum').value = r.numero || "";
+        document.getElementById('valor').value = formatMoneyBR(r.valor || 0);
+        document.getElementById('pagador').value = r.pagador || "";
+        document.getElementById('pagadorDoc').value = r.pagadorDoc || "";
+        document.getElementById('referente').value = r.referente || "";
+        document.getElementById('forma').value = r.forma || "Dinheiro";
+        document.getElementById('quem').value = r.quem || "";
+        document.getElementById('banco').value = r.banco || "";
+        document.getElementById('cidade').value = r.cidade || "Santarém";
+        document.getElementById('data').value = r.data || new Date().toLocaleDateString('pt-BR');
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+
+      btnPdf.addEventListener('click', () => { buildPrint(r); window.print(); });
+
+      btnDel.addEventListener('click', () => {
+        if(!confirm("Deseja apagar este recibo?")) return;
+        const updated = getRecibos().filter(x => x.id !== r.id);
+        setRecibos(updated);
+        renderSaved();
+      });
+
+      wrap.appendChild(div);
+    });
+  }
+
+  renderSaved();
+</script>
+</body>
+</html>

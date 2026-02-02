@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Orçamento - AD ADESIVOS</title>
+<style>
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --primary:#ffcc00;
+    --danger:#dc2626;
+    --ok:#16a34a;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);}
+  .wrap{max-width:980px;margin:24px auto 40px;padding:0 14px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:.2px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 0 rgba(17,24,39,.03)}
+  .card h2{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+  input,textarea,select{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;outline:none;font-size:14px;background:#fff
+  }
+  input:focus,textarea:focus,select:focus{border-color:#cbd5e1;box-shadow:0 0 0 3px rgba(17,24,39,.06)}
+  textarea{min-height:92px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:560px){.row{grid-template-columns:1fr}}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:860px){.row3{grid-template-columns:1fr}}
+  .logoRow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logoBox{width:120px;height:72px;border:1px dashed #cbd5e1;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff}
+  .logoBox img{width:100%;height:100%;object-fit:contain}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer;width:100%}
+  .btnPrimary{background:var(--primary);color:#111}
+  .btnGhost{background:#fff;color:#111;border:1px solid var(--line)}
+  .btnOk{background:var(--ok);color:#fff}
+  .btnSmall{width:auto;padding:10px 12px;border-radius:10px;font-size:13px}
+  .help{font-size:12px;color:var(--muted);margin-top:6px}
+  .error{font-size:12px;color:var(--danger);margin-top:6px;display:none}
+  .error.show{display:block}
+  .itemsHeader{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .table{
+    width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;overflow:hidden;border:1px solid var(--line);border-radius:12px
+  }
+  .table th,.table td{border-bottom:1px solid var(--line);padding:10px 10px;text-align:left;font-size:13px}
+  .table th{color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:11px;background:#fafafa}
+  .table tr:last-child td{border-bottom:none}
+  .table input{padding:10px 10px;border-radius:10px}
+  .qty{max-width:86px}
+  .money{max-width:140px}
+  .subtotalBox{font-weight:900;font-size:14px}
+  .lineRight{display:flex;justify-content:flex-end;gap:10px;align-items:center;margin-top:12px;font-size:14px}
+  .lineRight b{font-size:20px}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .saved .entry{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .saved .meta{font-size:13px;line-height:1.35}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px;margin-top:6px}
+  .entryBtns{display:flex;gap:8px;align-items:center}
+  .link{text-align:center;margin-top:14px}
+  .link a{color:#111;font-weight:900;text-decoration:none}
+
+  /* PRINT */
+  @media print{
+    body{background:#fff}
+    .noPrint{display:none !important}
+    .printArea{display:block !important}
+  }
+  .printArea{display:none}
+  .budget{
+    width: 190mm;
+    margin: 0 auto;
+    padding: 10mm 10mm;
+    border: 1px solid #111;
+    border-radius: 6px;
+    color:#111;
+    font-size:12px;
+  }
+  .bTop{display:flex;justify-content:space-between;gap:10mm;align-items:flex-start}
+  .bLogo{width:45mm;height:22mm;display:flex;align-items:center;justify-content:flex-start}
+  .bLogo img{max-width:100%;max-height:100%;object-fit:contain}
+  .bTitle{flex:1;text-align:center}
+  .bTitle .t{font-size:16px;font-weight:900}
+  .bTitle .s{font-size:11px;margin-top:2px}
+  .bNum{border:1px solid #111;border-radius:4px;padding:6px 8px;font-weight:900;white-space:nowrap}
+  .bInfo{margin-top:8mm;line-height:1.6}
+  .bTable{width:100%;border-collapse:collapse;margin-top:6mm}
+  .bTable th,.bTable td{border:1px solid #111;padding:6px;text-align:left}
+  .bTable th{background:#f3f3f3;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .bRight{display:flex;justify-content:flex-end;margin-top:6mm;gap:14px;align-items:center;flex-wrap:wrap}
+  .bRight .lbl{font-size:12px}
+  .bRight .val{font-size:16px;font-weight:900}
+  .small{font-size:11px}
+</style>
+</head>
+<body>
+  <div class="wrap noPrint">
+    <div class="topbar">
+      <h1>ORÇAMENTO <span style="font-size:12px; font-weight:900; padding:4px 8px; border:1px solid #e5e7eb; border-radius:999px; background:#fff;">VERSÃO NOVA</span></h1>
+      <div class="pill">AD ADESIVOS • (93) 99138-0733</div>
+    </div>
+
+    <div class="grid">
+      <!-- ESQUERDA -->
+      <div class="card">
+        <h2>Título do documento</h2>
+        <label for="titulo">Título do documento</label>
+        <input id="titulo" value="Orçamento" />
+        <div class="help">Você pode personalizar o título. Ex: Orçamento de Adesivos.</div>
+
+        <div class="divider"></div>
+
+        <div class="logoRow">
+          <div class="logoBox" title="Logomarca">
+            <img id="logoPreview" alt="Logo" style="display:none" />
+            <div id="logoPlaceholder" style="font-size:12px;color:var(--muted);">LOGO</div>
+          </div>
+          <div style="flex:1; min-width: 200px;">
+            <button class="btn btnGhost btnSmall" id="btnLogo" type="button">Alterar Logo</button>
+            <input id="logoInput" type="file" accept="image/*" style="display:none" />
+            <div class="help">A logo fica salva neste navegador.</div>
+          </div>
+        </div>
+
+        <label for="docNum">Nº do serviço</label>
+        <input id="docNum" readonly />
+
+        <div class="row">
+          <div>
+            <label for="clienteNome">Nome do cliente <span style="color:var(--danger)">*</span></label>
+            <input id="clienteNome" placeholder="Ex: João Silva" />
+            <div class="error" id="errNome">Nome do cliente é obrigatório</div>
+          </div>
+          <div>
+            <label for="clienteDoc">CPF ou CNPJ <span style="color:var(--danger)">*</span></label>
+            <input id="clienteDoc" placeholder="Ex: 000.000.000-00" />
+            <div class="error" id="errDoc">CPF/CNPJ é obrigatório</div>
+          </div>
+        </div>
+
+        <label for="clienteTelefone">Telefone</label>
+        <input id="clienteTelefone" placeholder="(00) 00000-0000" />
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;">
+          <button class="btn btnGhost btnSmall" type="button" id="btnSalvarCliente">💾 Salvar cliente</button>
+          <div class="help" style="margin:0;">O cliente também é salvo automaticamente.</div>
+        </div>
+
+        <label for="obs">Observações (opcional)</label>
+        <textarea id="obs" placeholder="Digite observações ou deixe em branco..."></textarea>
+
+        <div class="divider"></div>
+
+        <h2>Fechar serviço</h2>
+        <div class="help">Ao fechar, o sistema lança automaticamente uma <b>ENTRADA</b> no Fluxo de Caixa.</div>
+        <div class="row3" style="margin-top:10px;">
+          <div>
+            <label for="fecharPagamento">Forma de pagamento</label>
+            <select id="fecharPagamento">
+              <option>Pix</option>
+              <option>Dinheiro</option>
+              <option>Cartão Crédito</option>
+              <option>Cartão Débito</option>
+            </select>
+          </div>
+          <div>
+            <label for="fecharFuncionario">Quem recebeu</label>
+            <input id="fecharFuncionario" placeholder="Ex: Chefe / Funcionário" />
+          </div>
+          <div>
+            <label for="fecharBanco">Banco (opcional)</label>
+            <input id="fecharBanco" placeholder="Ex: Nubank / Caixa..." />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <button class="btn btnPrimary" type="button" id="btnSalvar">💾 Salvar orçamento</button>
+          <button class="btn btnGhost" type="button" id="btnPDF">📄 Imprimir / PDF</button>
+        </div>
+
+        <button class="btn btnOk" type="button" id="btnFechar" style="margin-top:10px;">✔ Fechar serviço (lançar no caixa)</button>
+        <button class="btn btnGhost" type="button" id="btnNovo" style="margin-top:10px;">🧾 Novo</button>
+
+        <div class="help" style="margin-top:10px;">
+          Para baixar em PDF: clique em “Imprimir / PDF” e selecione “Salvar como PDF”.
+        </div>
+
+        <div class="link"><a href="index.html">⬅ Voltar ao painel</a></div>
+      </div>
+
+      <!-- DIREITA -->
+      <div class="card">
+        <div class="itemsHeader">
+          <h2 style="margin:0;">Descrição do produto</h2>
+          <div class="right">
+            <button class="btn btnGhost btnSmall" type="button" id="btnAdd">+ Adicionar item</button>
+          </div>
+        </div>
+
+        <label for="descGeral">Descrição do produto <span style="color:var(--danger)">*</span></label>
+        <input id="descGeral" placeholder="Descrição do produto" />
+        <div class="error" id="errDesc">Descrição do item é obrigatória</div>
+
+        <table class="table" aria-label="Itens">
+          <thead>
+            <tr>
+              <th style="width:44%">Item</th>
+              <th style="width:14%">Qtd</th>
+              <th style="width:20%">Preço unitário</th>
+              <th style="width:22%">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="itensBody"></tbody>
+        </table>
+
+        <div class="row" style="margin-top:12px;">
+          <div>
+            <label for="desconto">Desconto (R$)</label>
+            <input id="desconto" class="money" placeholder="0,00" />
+          </div>
+          <div>
+            <label for="subTotalLbl">Subtotal</label>
+            <input id="subTotalLbl" readonly />
+          </div>
+        </div>
+
+        <div class="lineRight">
+          <span>Total:</span>
+          <b>R$ <span id="totalFinal">0,00</span></b>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Orçamentos salvos</h2>
+        <div class="saved" id="lista"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÁREA DE IMPRESSÃO -->
+  <div class="printArea">
+    <div class="budget" id="budget">
+      <div class="bTop">
+        <div class="bLogo">
+          <img id="pLogo" alt="Logo" style="display:none" />
+        </div>
+        <div class="bTitle">
+          <div class="t" id="pTitulo">Orçamento</div>
+          <div class="s">
+            AD ADESIVOS • CNPJ 36.837.986/0001-04<br>
+            Av. Moaçara, N° 1290B - Diamantino • WhatsApp: (93) 99138-0733
+          </div>
+        </div>
+        <div class="bNum">Nº <span id="pNum">0000</span></div>
+      </div>
+
+      <div class="bInfo" id="pCliente"></div>
+
+      <table class="bTable" id="pTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th style="width:16mm;">Qtd</th>
+            <th style="width:28mm;">Unit</th>
+            <th style="width:28mm;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="pItens"></tbody>
+      </table>
+
+      <div class="bRight">
+        <div class="lbl">Subtotal: R$ <span id="pSub">0,00</span></div>
+        <div class="lbl">Desconto: R$ <span id="pDesc">0,00</span></div>
+        <div class="val">Total: R$ <span id="pTotal">0,00</span></div>
+      </div>
+
+      <div style="margin-top:6mm;">
+        <div class="small"><b>Observações:</b></div>
+        <div class="small" id="pObs">—</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function onlyDigits(s){ return (s||"").replace(/\D+/g,''); }
+  function formatMoneyBR(n){ if(isNaN(n)) n=0; return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function parseMoneyBR(str){
+    if(!str) return 0;
+    const cleaned = str.toString().replace(/\s/g,'').replace(/R\$/g,'').replace(/\./g,'').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  }
+  function setError(id, show){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.toggle('show', !!show);
+  }
+  function nextDocNumber(){
+    const key = "ad_doc_seq";
+    let seq = parseInt(localStorage.getItem(key) || "1000", 10);
+    seq += 1;
+    localStorage.setItem(key, String(seq));
+    return seq;
+  }
+
+  // Prefill cliente via URL (?clienteKey=...)
+  function applyClienteFromURL(){
+    try{
+      const params = new URLSearchParams(window.location.search);
+      const key = params.get('clienteKey');
+      if(!key) return;
+      const clientes = JSON.parse(localStorage.getItem('ad_clientes') || '[]');
+      const c = clientes.find(x => x.key === key);
+      if(!c) return;
+      document.getElementById('clienteNome').value = c.nome || "";
+      document.getElementById('clienteTelefone').value = c.telefone || "";
+      document.getElementById('clienteDoc').value = c.doc || "";
+      window.scrollTo({top:0, behavior:'smooth'});
+    }catch(e){}
+  }
+
+  // Logo
+  const logoInput = document.getElementById('logoInput');
+  const btnLogo = document.getElementById('btnLogo');
+  const logoPreview = document.getElementById('logoPreview');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+
+  btnLogo.addEventListener('click', () => logoInput.click());
+  logoInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      localStorage.setItem('ad_logo', reader.result);
+      renderLogo();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function renderLogo(){
+    const data = localStorage.getItem('ad_logo');
+    if(data){
+      logoPreview.src = data;
+      logoPreview.style.display = "block";
+      logoPlaceholder.style.display = "none";
+    } else {
+      logoPreview.style.display = "none";
+      logoPlaceholder.style.display = "block";
+    }
+  }
+  renderLogo();
+
+  // Telefone mask
+  const tel = document.getElementById('clienteTelefone');
+  tel.addEventListener('input', () => {
+    let d = onlyDigits(tel.value).slice(0,11);
+    if(d.length <= 10){
+      d = d.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{4})(\d)/,'$1-$2');
+    } else {
+      d = d.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2');
+    }
+    tel.value = d;
+  });
+
+  // Items
+  const itensBody = document.getElementById('itensBody');
+  function addItemRow(itemName=""){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <input class="itemName" placeholder="Ex: Banner 1x2m" value="${itemName.replace(/"/g,'&quot;')}" />
+        <div class="error errItem" style="margin-top:6px;">Item é obrigatório</div>
+      </td>
+      <td><input class="qty" type="number" min="1" value="1" /></td>
+      <td><input class="unit money" placeholder="0,00" /></td>
+      <td class="subtotalBox">R$ <span class="sub">0,00</span>
+        <div style="margin-top:8px;">
+          <button class="btn btnGhost btnSmall btnDel" type="button">Excluir</button>
+        </div>
+      </td>
+    `;
+    itensBody.appendChild(tr);
+
+    const qty = tr.querySelector('.qty');
+    const unit = tr.querySelector('.unit');
+    const del = tr.querySelector('.btnDel');
+
+    qty.addEventListener('input', recalc);
+    unit.addEventListener('input', () => { unit.value = unit.value.replace(/[^0-9,\.]/g,''); recalc(); });
+    del.addEventListener('click', () => { tr.remove(); recalc(); });
+
+    recalc();
+  }
+  document.getElementById('btnAdd').addEventListener('click', () => addItemRow());
+  addItemRow();
+
+  const desconto = document.getElementById('desconto');
+  desconto.addEventListener('input', () => { desconto.value = desconto.value.replace(/[^0-9,\.]/g,''); recalc(); });
+
+  function recalc(){
+    let subtotal = 0;
+    [...itensBody.querySelectorAll('tr')].forEach(tr => {
+      const q = parseFloat(tr.querySelector('.qty').value || '0') || 0;
+      const u = parseMoneyBR(tr.querySelector('.unit').value);
+      const s = q * u;
+      tr.querySelector('.sub').textContent = formatMoneyBR(s);
+      subtotal += s;
+    });
+    document.getElementById('subTotalLbl').value = formatMoneyBR(subtotal);
+    const desc = parseMoneyBR(desconto.value);
+    const total = Math.max(0, subtotal - desc);
+    document.getElementById('totalFinal').textContent = formatMoneyBR(total);
+  }
+
+  // Doc number
+  const docNum = document.getElementById('docNum');
+  function setNewDoc(){ docNum.value = nextDocNumber(); }
+  setNewDoc();
+
+  // Storage
+  function getOrcamentos(){ return JSON.parse(localStorage.getItem('ad_orcamentos') || '[]'); }
+  function setOrcamentos(list){ localStorage.setItem('ad_orcamentos', JSON.stringify(list)); }
+  function getClientes(){ return JSON.parse(localStorage.getItem('ad_clientes') || '[]'); }
+  function setClientes(list){ localStorage.setItem('ad_clientes', JSON.stringify(list)); }
+  function getFluxo(){ return JSON.parse(localStorage.getItem('ad_fluxo') || '[]'); }
+  function setFluxo(list){ localStorage.setItem('ad_fluxo', JSON.stringify(list)); }
+
+  function validate(){
+    const nome = document.getElementById('clienteNome').value.trim();
+    const doc = document.getElementById('clienteDoc').value.trim();
+    const descGeral = document.getElementById('descGeral').value.trim();
+
+    setError('errNome', !nome);
+    setError('errDoc', !doc);
+    setError('errDesc', !descGeral);
+
+    let okItems = true;
+    [...itensBody.querySelectorAll('tr')].forEach(tr => {
+      const nm = tr.querySelector('.itemName').value.trim();
+      const err = tr.querySelector('.errItem');
+      const show = !nm;
+      err.classList.toggle('show', show);
+      okItems = okItems && !show;
+    });
+
+    return !!nome && !!doc && !!descGeral && okItems;
+  }
+
+  function makeClienteKey(nome, telefone, doc){
+    const d = onlyDigits(doc);
+    if(d) return d;
+    return (nome||"").toLowerCase().trim() + "|" + onlyDigits(telefone||"");
+  }
+
+  function saveClienteOnly(silent){
+    const nome = document.getElementById('clienteNome').value.trim();
+    const telefone = document.getElementById('clienteTelefone').value.trim();
+    const doc = document.getElementById('clienteDoc').value.trim();
+
+    if(!nome || !doc){
+      if(!silent) alert("Preencha Nome e CPF/CNPJ para salvar o cliente.");
+      return false;
+    }
+
+    const clientes = getClientes();
+    const key = makeClienteKey(nome, telefone, doc);
+    const idx = clientes.findIndex(c => c.key === key);
+    const obj = { key, nome, telefone, doc, updatedAt: new Date().toISOString() };
+
+    if(idx >= 0) clientes[idx] = {...clientes[idx], ...obj};
+    else clientes.unshift(obj);
+
+    setClientes(clientes);
+    if(!silent) alert("Cliente salvo!");
+    return true;
+  }
+
+  // Auto-salva cliente quando digita (evita esquecer)
+  let _clientSaveTimer = null;
+  function scheduleAutoSaveCliente(){
+    clearTimeout(_clientSaveTimer);
+    _clientSaveTimer = setTimeout(() => {
+      const nome = document.getElementById('clienteNome').value.trim();
+      const doc = document.getElementById('clienteDoc').value.trim();
+      if(nome && doc) saveClienteOnly(true);
+    }, 800);
+  }
+
+  // Botão salvar cliente
+  const btnSalvarCliente = document.getElementById('btnSalvarCliente');
+  btnSalvarCliente.addEventListener('click', () => saveClienteOnly(false));
+  ['clienteNome','clienteTelefone','clienteDoc'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', scheduleAutoSaveCliente);
+  });
+  window.addEventListener('beforeunload', () => {
+    const nome = document.getElementById('clienteNome').value.trim();
+    const doc = document.getElementById('clienteDoc').value.trim();
+    if(nome && doc) saveClienteOnly(true);
+  });
+
+  function collectPayload(){
+    const titulo = document.getElementById('titulo').value.trim() || "Orçamento";
+    const numero = document.getElementById('docNum').value;
+    const clienteNome = document.getElementById('clienteNome').value.trim();
+    const clienteTelefone = document.getElementById('clienteTelefone').value.trim();
+    const clienteDoc = document.getElementById('clienteDoc').value.trim();
+
+    const descGeral = document.getElementById('descGeral').value.trim();
+    const obs = document.getElementById('obs').value.trim();
+    const desc = parseMoneyBR(document.getElementById('desconto').value);
+    const subtotal = parseMoneyBR(document.getElementById('subTotalLbl').value);
+    const total = parseMoneyBR(document.getElementById('totalFinal').textContent);
+
+    const itens = [...itensBody.querySelectorAll('tr')].map(tr => ({
+      item: tr.querySelector('.itemName').value.trim(),
+      qtd: parseFloat(tr.querySelector('.qty').value || '0') || 0,
+      unit: parseMoneyBR(tr.querySelector('.unit').value),
+    }));
+
+    return {
+      id: Date.now(),
+      titulo,
+      numero,
+      empresa: {
+        nome: "AD ADESIVOS",
+        cnpj: "36.837.986/0001-04",
+        endereco: "Av. Moaçara, N° 1290B - Diamantino",
+        whatsapp: "(93) 99138-0733"
+      },
+      cliente: { nome: clienteNome, telefone: clienteTelefone, doc: clienteDoc },
+      descGeral,
+      itens,
+      desconto: desc,
+      subtotal,
+      total,
+      obs,
+      status: "aberto",
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  function loadIntoPrint(o){
+    document.getElementById('pTitulo').textContent = o.titulo || "Orçamento";
+    document.getElementById('pNum').textContent = o.numero || "0000";
+
+    const clienteHtml = `
+      <b>Cliente:</b> ${o.cliente.nome || "—"}<br>
+      <b>Telefone:</b> ${o.cliente.telefone || "—"}<br>
+      <b>CPF/CNPJ:</b> ${o.cliente.doc || "—"}<br>
+      <b>Descrição:</b> ${o.descGeral || "—"}<br>
+      <b>Data:</b> ${new Date(o.createdAt).toLocaleString('pt-BR')}
+    `;
+    document.getElementById('pCliente').innerHTML = clienteHtml;
+
+    const pItens = document.getElementById('pItens');
+    pItens.innerHTML = "";
+    (o.itens || []).forEach(it => {
+      const tr = document.createElement('tr');
+      const sub = (it.qtd || 0) * (it.unit || 0);
+      tr.innerHTML = `
+        <td>${it.item || ""}</td>
+        <td>${it.qtd || 0}</td>
+        <td>R$ ${formatMoneyBR(it.unit || 0)}</td>
+        <td>R$ ${formatMoneyBR(sub)}</td>
+      `;
+      pItens.appendChild(tr);
+    });
+
+    document.getElementById('pSub').textContent = formatMoneyBR(o.subtotal || 0);
+    document.getElementById('pDesc').textContent = formatMoneyBR(o.desconto || 0);
+    document.getElementById('pTotal').textContent = formatMoneyBR(o.total || 0);
+    document.getElementById('pObs').textContent = (o.obs && o.obs.trim()) ? o.obs.trim() : "—";
+
+    const logo = localStorage.getItem('ad_logo');
+    const pLogo = document.getElementById('pLogo');
+    if(logo){
+      pLogo.src = logo;
+      pLogo.style.display = "block";
+    } else {
+      pLogo.style.display = "none";
+    }
+  }
+
+  function saveBudget(promptPrint){
+    if(!validate()){
+      alert("Preencha os campos obrigatórios marcados com *");
+      return null;
+    }
+
+    const payload = collectPayload();
+
+    // salva/atualiza cliente
+    saveClienteOnly(true);
+
+    // salva orçamento
+    const list = getOrcamentos();
+    list.unshift(payload);
+    setOrcamentos(list);
+
+    renderSaved();
+
+    if(promptPrint){
+      const go = confirm("Deseja imprimir/baixar PDF agora?");
+      if(go){
+        loadIntoPrint(payload);
+        window.print();
+      }
+    }
+    return payload;
+  }
+
+  function resetForm(){
+    document.getElementById('clienteNome').value = "";
+    document.getElementById('clienteTelefone').value = "";
+    document.getElementById('clienteDoc').value = "";
+    document.getElementById('descGeral').value = "";
+    document.getElementById('obs').value = "";
+    document.getElementById('desconto').value = "";
+    itensBody.innerHTML = "";
+    addItemRow();
+    setNewDoc();
+    recalc();
+    setError('errNome', false);
+    setError('errDoc', false);
+    setError('errDesc', false);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.getElementById('btnSalvar').addEventListener('click', () => {
+    const saved = saveBudget(true);
+    if(saved) alert("Orçamento salvo com sucesso!");
+  });
+
+  document.getElementById('btnNovo').addEventListener('click', resetForm);
+
+  document.getElementById('btnPDF').addEventListener('click', () => {
+    if(!validate()){
+      alert("Preencha os campos obrigatórios marcados com *");
+      return;
+    }
+    const payload = collectPayload();
+    loadIntoPrint(payload);
+    window.print();
+  });
+
+  // Fechar serviço: lança no fluxo e (opcional) remove orçamento do histórico
+  document.getElementById('btnFechar').addEventListener('click', () => {
+    if(!validate()){
+      alert("Preencha os campos obrigatórios marcados com *");
+      return;
+    }
+    const pagamento = document.getElementById('fecharPagamento').value;
+    const quem = document.getElementById('fecharFuncionario').value.trim() || "Sistema";
+    const banco = document.getElementById('fecharBanco').value.trim();
+
+    if(!confirm("Deseja FECHAR o serviço e lançar no fluxo de caixa?")) return;
+
+    const payload = saveBudget(false);
+    if(!payload) return;
+
+    const fluxo = getFluxo();
+    const desc = `Serviço fechado - Orçamento #${payload.numero} - ${payload.cliente.nome} - ${payload.descGeral}`;
+    fluxo.unshift({
+      id: Date.now(),
+      tipo: "entrada",
+      valor: payload.total || 0,
+      pagamento,
+      descricao: desc,
+      funcionario: quem + (banco ? (" | Banco: " + banco) : ""),
+      createdAt: new Date().toISOString(),
+      alerta: false,
+      origem: { tipo: "orcamento", numero: payload.numero, id: payload.id }
+    });
+    setFluxo(fluxo);
+
+    // pergunta se quer apagar o orçamento (já está fechado)
+    const apagar = confirm("Serviço fechado ✅\n\nDeseja apagar este orçamento do histórico?");
+    if(apagar){
+      setOrcamentos(getOrcamentos().filter(o => o.id !== payload.id));
+      renderSaved();
+    }
+
+    alert("Lançado no caixa com sucesso!");
+  });
+
+  function renderSaved(){
+    const wrap = document.getElementById('lista');
+    const list = getOrcamentos();
+    if(list.length === 0){
+      wrap.innerHTML = "<div class='help'>Nenhum orçamento salvo ainda.</div>";
+      return;
+    }
+    wrap.innerHTML = "";
+    list.slice(0, 20).forEach(o => {
+      const div = document.createElement('div');
+      div.className = "entry";
+      const when = new Date(o.createdAt).toLocaleString('pt-BR');
+      div.innerHTML = `
+        <div class="meta">
+          <strong>#${o.numero}</strong> • ${o.cliente.nome}<br>
+          Total: <b>R$ ${formatMoneyBR(o.total)}</b><br>
+          <span class="tag">${when}</span>
+        </div>
+        <div class="entryBtns">
+          <button class="btn btnGhost btnSmall" type="button">Ver</button>
+          <button class="btn btnGhost btnSmall" type="button">PDF</button>
+          <button class="btn btnGhost btnSmall" type="button">Apagar</button>
+        </div>
+      `;
+      const [btnVer, btnPdf, btnDel] = div.querySelectorAll('button');
+
+      btnVer.addEventListener('click', () => {
+        document.getElementById('titulo').value = o.titulo || "Orçamento";
+        document.getElementById('docNum').value = o.numero;
+        document.getElementById('clienteNome').value = o.cliente.nome || "";
+        document.getElementById('clienteTelefone').value = o.cliente.telefone || "";
+        document.getElementById('clienteDoc').value = o.cliente.doc || "";
+        document.getElementById('descGeral').value = o.descGeral || "";
+        document.getElementById('obs').value = o.obs || "";
+        document.getElementById('desconto').value = formatMoneyBR(o.desconto || 0);
+        itensBody.innerHTML = "";
+        (o.itens || []).forEach(it => {
+          addItemRow(it.item || "");
+          const last = itensBody.querySelector('tr:last-child');
+          last.querySelector('.qty').value = it.qtd || 1;
+          last.querySelector('.unit').value = formatMoneyBR(it.unit || 0);
+        });
+        recalc();
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+
+      btnPdf.addEventListener('click', () => {
+        loadIntoPrint(o);
+        window.print();
+      });
+
+      btnDel.addEventListener('click', () => {
+        if(!confirm("Deseja apagar este orçamento?")) return;
+        const updated = getOrcamentos().filter(x => x.id !== o.id);
+        setOrcamentos(updated);
+        renderSaved();
+      });
+
+      wrap.appendChild(div);
+    });
+  }
+
+  // init
+  applyClienteFromURL();
+  renderSaved();
+  recalc();
+</script>
+</body>
+</html>

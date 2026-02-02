@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Backup - AD ADESIVOS</title>
+<style>
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --primary:#ffcc00;
+    --danger:#dc2626;
+    --ok:#16a34a;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);}
+  .wrap{max-width:980px;margin:24px auto 40px;padding:0 14px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:.2px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 0 rgba(17,24,39,.03)}
+  .card h2{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer}
+  .btnPrimary{background:var(--primary);color:#111}
+  .btnGhost{background:#fff;color:#111;border:1px solid var(--line)}
+  .btnDanger{background:#fff;color:#111;border:1px solid var(--danger)}
+  .btnSmall{padding:10px 12px;border-radius:10px;font-size:13px}
+  .help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .kpis{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+  @media (max-width:920px){.kpis{grid-template-columns:1fr 1fr}}
+  @media (max-width:520px){.kpis{grid-template-columns:1fr}}
+  .kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+  .kpi .t{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+  .kpi .v{font-size:20px;font-weight:900;margin-top:6px}
+  .ok{color:var(--ok)}
+  .bad{color:var(--danger)}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  input[type="file"]{display:none}
+  .link{text-align:center;margin-top:14px}
+  .link a{color:#111;font-weight:900;text-decoration:none}
+  pre{
+    background:#0b1020;
+    color:#e5e7eb;
+    padding:12px;
+    border-radius:12px;
+    overflow:auto;
+    font-size:12px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>BACKUP DO SISTEMA</h1>
+      <div class="pill">Exportar / Importar tudo • AD ADESIVOS</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Status dos dados</h2>
+        <div class="kpis">
+          <div class="kpi">
+            <div class="t">Clientes</div>
+            <div class="v" id="kClientes">0</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Orçamentos</div>
+            <div class="v" id="kOrc">0</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Recibos</div>
+            <div class="v" id="kRec">0</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Fluxo de caixa</div>
+            <div class="v" id="kFluxo">0</div>
+          </div>
+        </div>
+        <div class="help">
+          Esses dados ficam salvos no seu navegador (localStorage). Use o backup para não perder ao trocar de computador/navegador.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Exportar (backup)</h2>
+        <div class="row">
+          <button class="btn btnPrimary" id="btnExportAll" type="button">⬇ Baixar backup completo</button>
+          <button class="btn btnGhost" id="btnPreview" type="button">👀 Ver conteúdo</button>
+        </div>
+        <div class="help">
+          O arquivo gerado contém: <b>clientes</b>, <b>orçamentos</b>, <b>recibos</b>, <b>fluxo de caixa</b> e <b>config/seq</b> (números automáticos e logo).
+        </div>
+        <div id="previewWrap" style="display:none;margin-top:12px">
+          <pre id="preview" class="mono"></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Importar (restaurar)</h2>
+        <div class="row">
+          <button class="btn btnGhost" id="btnPick" type="button">⬆ Selecionar arquivo de backup</button>
+          <button class="btn btnDanger" id="btnImportMerge" type="button" disabled>Importar (Mesclar)</button>
+          <button class="btn btnDanger" id="btnImportReplace" type="button" disabled>Importar (Substituir)</button>
+          <input id="file" type="file" accept="application/json" />
+        </div>
+        <div class="help">
+          <b>Mesclar</b>: junta os dados com os atuais (recomendado).<br>
+          <b>Substituir</b>: apaga tudo do navegador e coloca apenas o backup (use com cuidado).
+        </div>
+        <div id="importInfo" class="help" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>Limpeza total</h2>
+        <div class="row">
+          <button class="btn btnDanger" id="btnWipe" type="button">🧨 Apagar tudo do navegador</button>
+        </div>
+        <div class="help">
+          Isso remove: clientes, orçamentos, recibos, fluxo e configurações (inclui logo e sequências).
+        </div>
+      </div>
+
+      <div class="link"><a href="index.html">⬅ Voltar ao painel</a></div>
+    </div>
+  </div>
+
+<script>
+  const KEYS = {
+    clientes: 'ad_clientes',
+    orcamentos: 'ad_orcamentos',
+    recibos: 'ad_recibos',
+    fluxo: 'ad_fluxo',
+    // extras (logo e sequências)
+    logo: 'ad_logo',
+    seqOrc: 'ad_doc_seq',
+    seqRec: 'ad_rec_seq'
+  };
+
+  function safeParse(key){
+    try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){ return []; }
+  }
+  function getRaw(key){ return localStorage.getItem(key); }
+
+  function updateKPIs(){
+    document.getElementById('kClientes').textContent = safeParse(KEYS.clientes).length;
+    document.getElementById('kOrc').textContent = safeParse(KEYS.orcamentos).length;
+    document.getElementById('kRec').textContent = safeParse(KEYS.recibos).length;
+    document.getElementById('kFluxo').textContent = safeParse(KEYS.fluxo).length;
+  }
+
+  function buildBackup(){
+    const backup = {
+      app: "AD ADESIVOS - Sistema",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data: {
+        clientes: safeParse(KEYS.clientes),
+        orcamentos: safeParse(KEYS.orcamentos),
+        recibos: safeParse(KEYS.recibos),
+        fluxo: safeParse(KEYS.fluxo),
+      },
+      config: {
+        logo: getRaw(KEYS.logo) || null,
+        seqOrc: getRaw(KEYS.seqOrc) || null,
+        seqRec: getRaw(KEYS.seqRec) || null,
+      }
+    };
+    return backup;
+  }
+
+  function downloadJSON(obj, filename){
+    const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // Export
+  const btnExportAll = document.getElementById('btnExportAll');
+  const btnPreview = document.getElementById('btnPreview');
+  const previewWrap = document.getElementById('previewWrap');
+  const preview = document.getElementById('preview');
+
+  btnExportAll.addEventListener('click', () => {
+    const b = buildBackup();
+    const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+    downloadJSON(b, `backup-ad-adesivos-${stamp}.json`);
+  });
+
+  btnPreview.addEventListener('click', () => {
+    const isOpen = previewWrap.style.display === "block";
+    if(isOpen){
+      previewWrap.style.display = "none";
+      btnPreview.textContent = "👀 Ver conteúdo";
+      return;
+    }
+    const b = buildBackup();
+    preview.textContent = JSON.stringify(b, null, 2);
+    previewWrap.style.display = "block";
+    btnPreview.textContent = "🙈 Ocultar conteúdo";
+  });
+
+  // Import
+  const btnPick = document.getElementById('btnPick');
+  const file = document.getElementById('file');
+  const btnImportMerge = document.getElementById('btnImportMerge');
+  const btnImportReplace = document.getElementById('btnImportReplace');
+  const importInfo = document.getElementById('importInfo');
+
+  let imported = null;
+
+  btnPick.addEventListener('click', () => file.click());
+
+  file.addEventListener('change', () => {
+    const f = file.files && file.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const parsed = JSON.parse(reader.result);
+        // suporte a formatos antigos: {clientes:[]}
+        const data = parsed.data ? parsed.data : parsed;
+        imported = {
+          clientes: data.clientes || data.ad_clientes || data.clientes || [],
+          orcamentos: data.orcamentos || data.ad_orcamentos || data.budgets || [],
+          recibos: data.recibos || data.ad_recibos || data.receipts || [],
+          fluxo: data.fluxo || data.ad_fluxo || data.cashflow || [],
+          config: parsed.config || {
+            logo: parsed.logo || null,
+            seqOrc: parsed.seqOrc || null,
+            seqRec: parsed.seqRec || null
+          }
+        };
+        if(!Array.isArray(imported.clientes) || !Array.isArray(imported.orcamentos) || !Array.isArray(imported.recibos) || !Array.isArray(imported.fluxo)){
+          throw new Error("Formato inválido");
+        }
+        btnImportMerge.disabled = false;
+        btnImportReplace.disabled = false;
+
+        importInfo.innerHTML = `Arquivo carregado ✅<br>
+          Clientes: <b>${imported.clientes.length}</b> • Orçamentos: <b>${imported.orcamentos.length}</b> • Recibos: <b>${imported.recibos.length}</b> • Fluxo: <b>${imported.fluxo.length}</b>`;
+      }catch(e){
+        imported = null;
+        btnImportMerge.disabled = true;
+        btnImportReplace.disabled = true;
+        importInfo.textContent = "Arquivo inválido.";
+      }
+    };
+    reader.readAsText(f, 'utf-8');
+  });
+
+  function mergeByKey(currentArr, incomingArr, keyField){
+    const map = new Map();
+    currentArr.forEach(x => { if(x && x[keyField] != null) map.set(String(x[keyField]), x); });
+    incomingArr.forEach(x => { if(x && x[keyField] != null) map.set(String(x[keyField]), {...map.get(String(x[keyField])), ...x}); });
+    return [...map.values()];
+  }
+
+  function mergeById(currentArr, incomingArr){
+    return mergeByKey(currentArr, incomingArr, 'id');
+  }
+
+  function applyMerge(){
+    const curClientes = safeParse(KEYS.clientes);
+    const curOrc = safeParse(KEYS.orcamentos);
+    const curRec = safeParse(KEYS.recibos);
+    const curFluxo = safeParse(KEYS.fluxo);
+
+    // clientes: key
+    const mergedClientes = mergeByKey(curClientes, imported.clientes, 'key');
+
+    // orçamentos/recibos/fluxo: id
+    const mergedOrc = mergeById(curOrc, imported.orcamentos).sort((a,b) => (b.createdAt||"").localeCompare(a.createdAt||""));
+    const mergedRec = mergeById(curRec, imported.recibos).sort((a,b) => (b.createdAt||"").localeCompare(a.createdAt||""));
+    const mergedFluxo = mergeById(curFluxo, imported.fluxo).sort((a,b) => (b.createdAt||"").localeCompare(a.createdAt||""));
+
+    localStorage.setItem(KEYS.clientes, JSON.stringify(mergedClientes));
+    localStorage.setItem(KEYS.orcamentos, JSON.stringify(mergedOrc));
+    localStorage.setItem(KEYS.recibos, JSON.stringify(mergedRec));
+    localStorage.setItem(KEYS.fluxo, JSON.stringify(mergedFluxo));
+
+    // config: só aplica se existir no backup (não sobrescreve se vier null)
+    if(imported.config){
+      if(imported.config.logo) localStorage.setItem(KEYS.logo, imported.config.logo);
+      if(imported.config.seqOrc) localStorage.setItem(KEYS.seqOrc, imported.config.seqOrc);
+      if(imported.config.seqRec) localStorage.setItem(KEYS.seqRec, imported.config.seqRec);
+    }
+  }
+
+  function applyReplace(){
+    // apaga tudo primeiro
+    Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+
+    // escreve do backup
+    localStorage.setItem(KEYS.clientes, JSON.stringify(imported.clientes));
+    localStorage.setItem(KEYS.orcamentos, JSON.stringify(imported.orcamentos));
+    localStorage.setItem(KEYS.recibos, JSON.stringify(imported.recibos));
+    localStorage.setItem(KEYS.fluxo, JSON.stringify(imported.fluxo));
+
+    if(imported.config){
+      if(imported.config.logo) localStorage.setItem(KEYS.logo, imported.config.logo);
+      if(imported.config.seqOrc) localStorage.setItem(KEYS.seqOrc, imported.config.seqOrc);
+      if(imported.config.seqRec) localStorage.setItem(KEYS.seqRec, imported.config.seqRec);
+    }
+  }
+
+  btnImportMerge.addEventListener('click', () => {
+    if(!imported) return;
+    if(!confirm("Importar MESCLANDO com seus dados atuais?")) return;
+    applyMerge();
+    alert("Backup importado (mesclado) ✅");
+    updateKPIs();
+  });
+
+  btnImportReplace.addEventListener('click', () => {
+    if(!imported) return;
+    if(!confirm("ATENÇÃO: Isso vai SUBSTITUIR tudo no navegador. Continuar?")) return;
+    if(!confirm("Confirme novamente: deseja realmente substituir tudo?")) return;
+    applyReplace();
+    alert("Backup importado (substituído) ✅");
+    updateKPIs();
+  });
+
+  // wipe
+  document.getElementById('btnWipe').addEventListener('click', () => {
+    if(!confirm("Apagar TUDO do navegador?")) return;
+    if(!confirm("Última confirmação: deseja apagar tudo?")) return;
+    Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+    alert("Tudo apagado.");
+    updateKPIs();
+  });
+
+  updateKPIs();
+</script>
+</body>
+</html>

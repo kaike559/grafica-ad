@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fluxo de Caixa - AD ADESIVOS</title>
+<style>
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --primary:#ffcc00;
+    --danger:#dc2626;
+    --ok:#16a34a;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);}
+  .wrap{max-width:1100px;margin:24px auto 40px;padding:0 14px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:.2px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 0 rgba(17,24,39,.03)}
+  .card h2{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+  input,select,textarea{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;outline:none;font-size:14px;background:#fff
+  }
+  input:focus,select:focus,textarea:focus{border-color:#cbd5e1;box-shadow:0 0 0 3px rgba(17,24,39,.06)}
+  textarea{min-height:90px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:920px){.row{grid-template-columns:1fr}}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:720px){.row2{grid-template-columns:1fr}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer}
+  .btnPrimary{background:var(--primary);color:#111}
+  .btnGhost{background:#fff;color:#111;border:1px solid var(--line)}
+  .btnDanger{background:#fff;color:#111;border:1px solid var(--danger)}
+  .btnSmall{padding:10px 12px;border-radius:10px;font-size:13px}
+  .help{font-size:12px;color:var(--muted);margin-top:6px}
+  .error{font-size:12px;color:var(--danger);margin-top:6px;display:none}
+  .error.show{display:block}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:920px){.kpis{grid-template-columns:1fr}}
+  .kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+  .kpi .t{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  .kpi .v{font-size:22px;font-weight:900;margin-top:6px}
+  .kpi .v.ok{color:var(--ok)}
+  .kpi .v.bad{color:var(--danger)}
+  table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{border-bottom:1px solid var(--line);padding:10px 10px;text-align:left;font-size:13px;vertical-align:top}
+  th{background:#fafafa;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px}
+  .typeIn{color:var(--ok);font-weight:900}
+  .typeOut{color:var(--danger);font-weight:900}
+  .flagBad{background:#fff2f2}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .rightTools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .link{text-align:center;margin-top:14px}
+  .link a{color:#111;font-weight:900;text-decoration:none}
+  dialog{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    max-width:760px;
+    width: calc(100% - 24px);
+  }
+  dialog::backdrop{background:rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>FLUXO DE CAIXA</h1>
+      <div class="pill">Data/hora automáticas • AD ADESIVOS</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div>
+            <h2 style="margin:0;">Lançamento</h2>
+            <div class="help">Registre entradas e saídas com descrição, forma de pagamento e funcionário.</div>
+          </div>
+          <div class="rightTools">
+            <button class="btn btnGhost btnSmall" id="btnExport" type="button">⬇ Exportar</button>
+            <button class="btn btnGhost btnSmall" id="btnImport" type="button">⬆ Importar</button>
+            <input id="fileImport" type="file" accept="application/json" style="display:none" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="tipo">Tipo</label>
+            <select id="tipo">
+              <option value="entrada">Entrada</option>
+              <option value="saida">Saída</option>
+            </select>
+          </div>
+          <div>
+            <label for="valor">Valor (R$) <span style="color:var(--danger)">*</span></label>
+            <input id="valor" placeholder="Ex: 30,00" />
+            <div class="error" id="errValor">Informe um valor maior que 0.</div>
+          </div>
+          <div>
+            <label for="pagamento">Forma de pagamento</label>
+            <select id="pagamento">
+              <option>Pix</option>
+              <option>Dinheiro</option>
+              <option>Cartão Crédito</option>
+              <option>Cartão Débito</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label for="descricao">Descrição do material/serviço <span style="color:var(--danger)">*</span></label>
+            <input id="descricao" placeholder="Ex: Adesivo, banner, impressão..." />
+            <div class="error" id="errDesc">Descrição é obrigatória.</div>
+          </div>
+          <div>
+            <label for="funcionario">Funcionário</label>
+            <input id="funcionario" placeholder="Ex: Chefe / Nome do funcionário" />
+            <div class="help">Quando tiver login, isso ficará automático.</div>
+          </div>
+        </div>
+
+        <button class="btn btnPrimary" id="btnAdd" type="button">➕ Adicionar ao caixa</button>
+      </div>
+
+      <div class="card">
+        <h2>Resumo</h2>
+        <div class="kpis">
+          <div class="kpi">
+            <div class="t">Entradas</div>
+            <div class="v ok" id="kpiIn">R$ 0,00</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Saídas</div>
+            <div class="v bad" id="kpiOut">R$ 0,00</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Saldo</div>
+            <div class="v" id="kpiSaldo">R$ 0,00</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div>
+            <label for="filtro">Filtro</label>
+            <select id="filtro">
+              <option value="todos">Todos</option>
+              <option value="hoje">Hoje</option>
+              <option value="mes">Este mês</option>
+              <option value="entrada">Somente entradas</option>
+              <option value="saida">Somente saídas</option>
+              <option value="alerta">Somente com alerta</option>
+            </select>
+          </div>
+          <div>
+            <label for="busca">Buscar (descrição / funcionário)</label>
+            <input id="busca" placeholder="Digite para buscar..." />
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+            <button class="btn btnGhost btnSmall" id="btnLimparFiltro" type="button">Limpar</button>
+            <button class="btn btnDanger btnSmall" id="btnApagarTudo" type="button">Apagar tudo</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2 style="margin-top:0;">Lançamentos</h2>
+        <div class="help" id="count"></div>
+
+        <div style="overflow:auto;margin-top:10px">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Pagamento</th>
+                <th>Funcionário</th>
+                <th>Data/Hora</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="link"><a href="index.html">⬅ Voltar ao painel</a></div>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="dlg">
+    <h3 style="margin:0 0 10px;">Editar lançamento</h3>
+    <div class="row">
+      <div>
+        <label>Tipo</label>
+        <select id="eTipo">
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+        </select>
+      </div>
+      <div>
+        <label>Valor (R$)</label>
+        <input id="eValor" />
+      </div>
+      <div>
+        <label>Pagamento</label>
+        <select id="ePag">
+          <option>Pix</option>
+          <option>Dinheiro</option>
+          <option>Cartão Crédito</option>
+          <option>Cartão Débito</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div>
+        <label>Descrição</label>
+        <input id="eDesc" />
+      </div>
+      <div>
+        <label>Funcionário</label>
+        <input id="eFunc" />
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:10px">
+      <div class="help">⚠️ “Alerta” marca que o orçamento/lançamento está errado.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btnGhost btnSmall" id="btnCancel" type="button">Cancelar</button>
+        <button class="btn btnPrimary btnSmall" id="btnSave" type="button">Salvar</button>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+  function onlyDigits(s){ return (s||"").replace(/\\D+/g,''); }
+  function formatMoneyBR(n){ if(isNaN(n)) n=0; return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function parseMoneyBR(str){
+    if(!str) return 0;
+    const cleaned = str.toString().replace(/\\s/g,'').replace(/R\\$/g,'').replace(/\\./g,'').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  }
+  function todayISO(){
+    const d = new Date();
+    const off = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - off*60000);
+    return local.toISOString().slice(0,10);
+  }
+  function monthKey(d){
+    const dt = new Date(d);
+    const m = String(dt.getMonth()+1).padStart(2,'0');
+    return dt.getFullYear() + "-" + m;
+  }
+
+  // storage
+  function getFluxo(){ return JSON.parse(localStorage.getItem('ad_fluxo') || '[]'); }
+  function setFluxo(list){ localStorage.setItem('ad_fluxo', JSON.stringify(list)); }
+
+  // form inputs
+  const tipo = document.getElementById('tipo');
+  const valor = document.getElementById('valor');
+  const pagamento = document.getElementById('pagamento');
+  const descricao = document.getElementById('descricao');
+  const funcionario = document.getElementById('funcionario');
+
+  const errValor = document.getElementById('errValor');
+  const errDesc  = document.getElementById('errDesc');
+
+  // masks
+  valor.addEventListener('input', () => {
+    valor.value = valor.value.replace(/[^0-9,\\.]/g,'');
+  });
+
+  function validate(){
+    const v = parseMoneyBR(valor.value);
+    const d = (descricao.value || "").trim();
+    errValor.classList.toggle('show', !(v > 0));
+    errDesc.classList.toggle('show', !d);
+    return (v > 0) && !!d;
+  }
+
+  document.getElementById('btnAdd').addEventListener('click', () => {
+    if(!validate()){
+      alert("Preencha Valor e Descrição.");
+      return;
+    }
+    const item = {
+      id: Date.now(),
+      tipo: tipo.value,
+      valor: parseMoneyBR(valor.value),
+      pagamento: pagamento.value,
+      descricao: descricao.value.trim(),
+      funcionario: (funcionario.value || "").trim(),
+      createdAt: new Date().toISOString(),
+      alerta: false
+    };
+    const list = getFluxo();
+    list.unshift(item);
+    setFluxo(list);
+
+    // reset parcial
+    valor.value = "";
+    descricao.value = "";
+    // mantém funcionário para agilizar
+    render();
+  });
+
+  // filters
+  const filtro = document.getElementById('filtro');
+  const busca = document.getElementById('busca');
+  const btnLimparFiltro = document.getElementById('btnLimparFiltro');
+  filtro.addEventListener('change', render);
+  busca.addEventListener('input', render);
+  btnLimparFiltro.addEventListener('click', () => {
+    filtro.value = "todos";
+    busca.value = "";
+    render();
+  });
+
+  // wipe
+  document.getElementById('btnApagarTudo').addEventListener('click', () => {
+    if(!confirm("Tem certeza que deseja apagar TODO o fluxo de caixa?")) return;
+    setFluxo([]);
+    render();
+  });
+
+  // KPI + table
+  const tbody = document.getElementById('tbody');
+  const count = document.getElementById('count');
+  const kpiIn = document.getElementById('kpiIn');
+  const kpiOut = document.getElementById('kpiOut');
+  const kpiSaldo = document.getElementById('kpiSaldo');
+
+  // editor dialog
+  const dlg = document.getElementById('dlg');
+  const eTipo = document.getElementById('eTipo');
+  const eValor = document.getElementById('eValor');
+  const ePag = document.getElementById('ePag');
+  const eDesc = document.getElementById('eDesc');
+  const eFunc = document.getElementById('eFunc');
+  document.getElementById('btnCancel').addEventListener('click', () => dlg.close());
+  document.getElementById('btnSave').addEventListener('click', () => saveEdit());
+
+  let editingId = null;
+
+  function openEdit(item){
+    editingId = item.id;
+    eTipo.value = item.tipo;
+    eValor.value = formatMoneyBR(item.valor || 0);
+    ePag.value = item.pagamento || "Pix";
+    eDesc.value = item.descricao || "";
+    eFunc.value = item.funcionario || "";
+    dlg.showModal();
+  }
+
+  function saveEdit(){
+    const list = getFluxo();
+    const idx = list.findIndex(x => x.id === editingId);
+    if(idx < 0) return dlg.close();
+
+    const v = parseMoneyBR(eValor.value);
+    if(!(v > 0) || !(eDesc.value.trim())){
+      alert("Valor e descrição são obrigatórios.");
+      return;
+    }
+
+    list[idx].tipo = eTipo.value;
+    list[idx].valor = v;
+    list[idx].pagamento = ePag.value;
+    list[idx].descricao = eDesc.value.trim();
+    list[idx].funcionario = eFunc.value.trim();
+    list[idx].updatedAt = new Date().toISOString();
+
+    setFluxo(list);
+    dlg.close();
+    render();
+  }
+
+  function render(){
+    const listAll = getFluxo();
+
+    // KPIs (sempre do total completo)
+    let sumIn = 0, sumOut = 0;
+    listAll.forEach(x => {
+      if(x.tipo === 'entrada') sumIn += (x.valor || 0);
+      else sumOut += (x.valor || 0);
+    });
+    kpiIn.textContent = "R$ " + formatMoneyBR(sumIn);
+    kpiOut.textContent = "R$ " + formatMoneyBR(sumOut);
+    const saldo = sumIn - sumOut;
+    kpiSaldo.textContent = "R$ " + formatMoneyBR(saldo);
+    kpiSaldo.className = "v " + (saldo >= 0 ? "ok" : "bad");
+
+    // aplica filtros para a lista
+    const f = filtro.value;
+    const term = (busca.value || "").trim().toLowerCase();
+    const termDigits = onlyDigits(term);
+
+    const today = todayISO();
+    const thisMonth = monthKey(new Date().toISOString());
+
+    let view = listAll.slice();
+
+    if(f === "hoje"){
+      view = view.filter(x => (x.createdAt || "").slice(0,10) === today);
+    } else if(f === "mes"){
+      view = view.filter(x => monthKey(x.createdAt || "") === thisMonth);
+    } else if(f === "entrada"){
+      view = view.filter(x => x.tipo === "entrada");
+    } else if(f === "saida"){
+      view = view.filter(x => x.tipo === "saida");
+    } else if(f === "alerta"){
+      view = view.filter(x => !!x.alerta);
+    }
+
+    if(term){
+      view = view.filter(x => {
+        const d = (x.descricao||"").toLowerCase();
+        const fn = (x.funcionario||"").toLowerCase();
+        return d.includes(term) || fn.includes(term) || (termDigits && (onlyDigits(x.funcionario||"").includes(termDigits)));
+      });
+    }
+
+    count.textContent = `${view.length} lançamento(s) no filtro.`;
+
+    tbody.innerHTML = "";
+    if(view.length === 0){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="7" class="help">Nenhum lançamento encontrado.</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    view.forEach(item => {
+      const tr = document.createElement('tr');
+      if(item.alerta) tr.classList.add('flagBad');
+
+      const dt = item.createdAt ? new Date(item.createdAt).toLocaleString('pt-BR') : "—";
+      const tClass = item.tipo === "entrada" ? "typeIn" : "typeOut";
+      const tLabel = item.tipo === "entrada" ? "Entrada" : "Saída";
+
+      tr.innerHTML = `
+        <td><span class="${tClass}">${tLabel}</span> ${item.alerta ? '<span class="tag" style="margin-left:6px;border-color:var(--danger);color:var(--danger)">ALERTA</span>' : ''}</td>
+        <td>${item.descricao || ""}</td>
+        <td><b>R$ ${formatMoneyBR(item.valor || 0)}</b></td>
+        <td>${item.pagamento || ""}</td>
+        <td>${item.funcionario || "—"}</td>
+        <td><span class="tag">${dt}</span></td>
+        <td>
+          <div class="actions">
+            <button class="btn btnGhost btnSmall" type="button">✏ Alterar</button>
+            <button class="btn btnDanger btnSmall" type="button">🗑 Excluir</button>
+            <button class="btn btnGhost btnSmall" type="button">⚠ Alerta</button>
+          </div>
+        </td>
+      `;
+
+      const [bEdit, bDel, bAlert] = tr.querySelectorAll('button');
+
+      bEdit.addEventListener('click', () => openEdit(item));
+      bDel.addEventListener('click', () => {
+        if(!confirm("Excluir este lançamento?")) return;
+        setFluxo(getFluxo().filter(x => x.id !== item.id));
+        render();
+      });
+      bAlert.addEventListener('click', () => {
+        const list = getFluxo();
+        const idx = list.findIndex(x => x.id === item.id);
+        if(idx < 0) return;
+        list[idx].alerta = !list[idx].alerta;
+        list[idx].updatedAt = new Date().toISOString();
+        setFluxo(list);
+        render();
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Export/Import
+  const btnExport = document.getElementById('btnExport');
+  const btnImport = document.getElementById('btnImport');
+  const fileImport = document.getElementById('fileImport');
+
+  btnExport.addEventListener('click', () => {
+    const data = { exportedAt: new Date().toISOString(), fluxo: getFluxo() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "fluxo-ad-adesivos.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  btnImport.addEventListener('click', () => fileImport.click());
+  fileImport.addEventListener('change', () => {
+    const f = fileImport.files && fileImport.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const parsed = JSON.parse(reader.result);
+        const incoming = (parsed.fluxo || parsed || []);
+        if(!Array.isArray(incoming)) throw new Error("Formato inválido");
+        // merge por id
+        const current = getFluxo();
+        const map = new Map(current.map(x => [x.id, x]));
+        incoming.forEach(x => { if(x && x.id) map.set(x.id, {...map.get(x.id), ...x}); });
+        setFluxo([...map.values()].sort((a,b) => (b.createdAt||"").localeCompare(a.createdAt||"")));
+        alert("Fluxo importado!");
+        render();
+      }catch(e){
+        alert("Arquivo inválido.");
+      }
+    };
+    reader.readAsText(f, 'utf-8');
+    fileImport.value = "";
+  });
+
+  render();
+</script>
+</body>
+</html>

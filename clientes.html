@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clientes - AD ADESIVOS</title>
+<style>
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --primary:#ffcc00;
+    --danger:#dc2626;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);}
+  .wrap{max-width:980px;margin:24px auto 40px;padding:0 14px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:.2px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 1px 0 rgba(17,24,39,.03)}
+  .card h2{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+  input{
+    width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 12px;outline:none;font-size:14px;background:#fff
+  }
+  input:focus{border-color:#cbd5e1;box-shadow:0 0 0 3px rgba(17,24,39,.06)}
+  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media (max-width:860px){.row{grid-template-columns:1fr}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer}
+  .btnPrimary{background:var(--primary);color:#111}
+  .btnGhost{background:#fff;color:#111;border:1px solid var(--line)}
+  .btnDanger{background:#fff;color:#111;border:1px solid var(--danger)}
+  .btnSmall{padding:10px 12px;border-radius:10px;font-size:13px}
+  .help{font-size:12px;color:var(--muted);margin-top:6px}
+  .divider{height:1px;background:var(--line);margin:14px 0}
+  .list .entry{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    margin-top:10px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+  .meta{font-size:13px;line-height:1.35;min-width:220px}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px;margin-top:6px}
+  .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  dialog{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+    max-width:520px;
+    width: calc(100% - 24px);
+  }
+  dialog::backdrop{background:rgba(0,0,0,.35)}
+  .link{text-align:center;margin-top:14px}
+  .link a{color:#111;font-weight:900;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>CLIENTES</h1>
+      <div class="pill">Salvos no navegador • AD ADESIVOS</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Buscar</h2>
+        <label for="q">Pesquisar por nome / telefone / CPF/CNPJ</label>
+        <input id="q" placeholder="Digite para buscar..." />
+        <div class="help">Dica: você pode buscar por parte do nome, números do telefone ou CPF/CNPJ.</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div>
+            <h2 style="margin:0;">Lista de clientes</h2>
+            <div class="help" id="count"></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="btn btnGhost btnSmall" id="btnExport" type="button">⬇ Exportar</button>
+            <button class="btn btnGhost btnSmall" id="btnImport" type="button">⬆ Importar</button>
+            <input id="fileImport" type="file" accept="application/json" style="display:none" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="list" id="list"></div>
+
+        <div class="link"><a href="index.html">⬅ Voltar ao painel</a></div>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="dlg">
+    <h3 style="margin:0 0 10px;">Editar cliente</h3>
+    <div class="row">
+      <div>
+        <label>Nome</label>
+        <input id="eNome" />
+      </div>
+      <div>
+        <label>Telefone</label>
+        <input id="eTel" />
+      </div>
+      <div>
+        <label>CPF/CNPJ</label>
+        <input id="eDoc" />
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn btnGhost btnSmall" id="btnCancel" type="button">Cancelar</button>
+      <button class="btn btnPrimary btnSmall" id="btnSave" type="button">Salvar</button>
+    </div>
+  </dialog>
+
+<script>
+  function onlyDigits(s){ return (s||"").replace(/\\D+/g,''); }
+  function getClientes(){ return JSON.parse(localStorage.getItem('ad_clientes') || '[]'); }
+  function setClientes(list){ localStorage.setItem('ad_clientes', JSON.stringify(list)); }
+
+  const q = document.getElementById('q');
+  const listEl = document.getElementById('list');
+  const countEl = document.getElementById('count');
+
+  const dlg = document.getElementById('dlg');
+  const eNome = document.getElementById('eNome');
+  const eTel  = document.getElementById('eTel');
+  const eDoc  = document.getElementById('eDoc');
+  const btnCancel = document.getElementById('btnCancel');
+  const btnSave = document.getElementById('btnSave');
+
+  let editingKey = null;
+
+  function render(){
+    const term = (q.value || "").trim().toLowerCase();
+    let clientes = getClientes();
+
+    // ordena por atualizado mais recente
+    clientes.sort((a,b) => (b.updatedAt||"").localeCompare(a.updatedAt||""));
+
+    if(term){
+      const termDigits = onlyDigits(term);
+      clientes = clientes.filter(c => {
+        const hay = (c.nome||"").toLowerCase();
+        const tel = onlyDigits(c.telefone||"");
+        const doc = onlyDigits(c.doc||"");
+        return hay.includes(term) || (termDigits && (tel.includes(termDigits) || doc.includes(termDigits)));
+      });
+    }
+
+    countEl.textContent = `${clientes.length} cliente(s) encontrado(s).`;
+
+    if(clientes.length === 0){
+      listEl.innerHTML = "<div class='help'>Nenhum cliente salvo ainda.</div>";
+      return;
+    }
+
+    listEl.innerHTML = "";
+    clientes.forEach(c => {
+      const when = c.updatedAt ? new Date(c.updatedAt).toLocaleString('pt-BR') : "—";
+      const div = document.createElement('div');
+      div.className = "entry";
+      div.innerHTML = `
+        <div class="meta">
+          <strong>${c.nome || "—"}</strong><br>
+          Tel: ${c.telefone || "—"}<br>
+          CPF/CNPJ: ${c.doc || "—"}<br>
+          <span class="tag">Atualizado: ${when}</span>
+        </div>
+        <div class="actions">
+          <button class="btn btnPrimary btnSmall" type="button">Usar no Orçamento</button>
+          <button class="btn btnGhost btnSmall" type="button">Editar</button>
+          <button class="btn btnDanger btnSmall" type="button">Apagar</button>
+        </div>
+      `;
+
+      const [btnUse, btnEdit, btnDel] = div.querySelectorAll('button');
+
+      btnUse.addEventListener('click', () => {
+        // abre orçamento com chave do cliente
+        const url = new URL(location.href);
+        const base = url.href.replace(/\\/clientes\\.html.*$/,'/orcamento.html');
+        window.location.href = base + "?clienteKey=" + encodeURIComponent(c.key);
+      });
+
+      btnEdit.addEventListener('click', () => {
+        editingKey = c.key;
+        eNome.value = c.nome || "";
+        eTel.value = c.telefone || "";
+        eDoc.value = c.doc || "";
+        dlg.showModal();
+      });
+
+      btnDel.addEventListener('click', () => {
+        if(!confirm("Apagar este cliente?")) return;
+        const updated = getClientes().filter(x => x.key !== c.key);
+        setClientes(updated);
+        render();
+      });
+
+      listEl.appendChild(div);
+    });
+  }
+
+  q.addEventListener('input', render);
+
+  btnCancel.addEventListener('click', () => dlg.close());
+  btnSave.addEventListener('click', () => {
+    if(!editingKey) return dlg.close();
+    const clientes = getClientes();
+    const idx = clientes.findIndex(c => c.key === editingKey);
+    if(idx < 0) return dlg.close();
+
+    clientes[idx].nome = eNome.value.trim();
+    clientes[idx].telefone = eTel.value.trim();
+    clientes[idx].doc = eDoc.value.trim();
+    clientes[idx].updatedAt = new Date().toISOString();
+
+    // se mudou doc/telefone/nome, recalcula key (opcional)
+    // aqui mantemos a key original para não quebrar vínculos com orçamentos salvos.
+
+    setClientes(clientes);
+    dlg.close();
+    render();
+  });
+
+  // Export/Import
+  const btnExport = document.getElementById('btnExport');
+  const btnImport = document.getElementById('btnImport');
+  const fileImport = document.getElementById('fileImport');
+
+  btnExport.addEventListener('click', () => {
+    const data = {
+      exportedAt: new Date().toISOString(),
+      clientes: getClientes()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "clientes-ad-adesivos.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  btnImport.addEventListener('click', () => fileImport.click());
+  fileImport.addEventListener('change', () => {
+    const f = fileImport.files && fileImport.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const parsed = JSON.parse(reader.result);
+        const incoming = (parsed.clientes || parsed || []);
+        if(!Array.isArray(incoming)) throw new Error("Formato inválido");
+        // merge por key
+        const current = getClientes();
+        const map = new Map(current.map(c => [c.key, c]));
+        incoming.forEach(c => {
+          if(c && c.key){
+            map.set(c.key, {...map.get(c.key), ...c});
+          }
+        });
+        setClientes([...map.values()]);
+        alert("Clientes importados!");
+        render();
+      }catch(e){
+        alert("Arquivo inválido.");
+      }
+    };
+    reader.readAsText(f, 'utf-8');
+    fileImport.value = "";
+  });
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel - AD ADESIVOS</title>
+<style>
+  :root{
+    --bg:#f5f5f7;
+    --card:#ffffff;
+    --text:#111111;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --gold:#c79a12;   /* amarelo queimado discreto */
+    --gold2:#a67f0e;
+    --shadow: 0 18px 45px rgba(17,24,39,.10);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: radial-gradient(900px 420px at 15% 5%, rgba(199,154,18,.10), transparent 55%),
+                linear-gradient(180deg, #f7f7f9 0%, var(--bg) 60%);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:22px 14px 50px;
+  }
+  .wrap{width:min(980px,100%);}
+
+  /* Top */
+  .top{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:16px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:260px;}
+  .mark{
+    width:46px;height:46px;border-radius:16px;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold2) 100%);
+    color:#111;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;
+    box-shadow: 0 10px 22px rgba(199,154,18,.18);
+  }
+  .brand h1{margin:0;font-size:18px;letter-spacing:.2px}
+  .brand .sub{margin-top:2px;font-size:12px;color:var(--muted)}
+
+  .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .pill{
+    border:1px solid var(--line);
+    background:#fafafa;
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .btn{
+    border:1px solid var(--line);
+    background:#ffffff;
+    color:var(--text);
+    border-radius:12px;
+    padding:10px 12px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .btn:hover{filter:brightness(.98)}
+  .btnGold{
+    border:none;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--gold2) 100%);
+    color:#111;
+  }
+
+  /* Hero */
+  .hero{
+    margin-top:14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:16px;
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap:12px;
+    align-items:stretch;
+  }
+  @media (max-width:860px){ .hero{grid-template-columns:1fr;} }
+
+  .hero h2{margin:0;font-size:18px}
+  .hero p{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
+  .quick{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background: #fafafa;
+    padding:12px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .qItem{
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#fff;
+    padding:10px;
+  }
+  .qItem .k{font-size:11px;color:var(--muted)}
+  .qItem .v{margin-top:6px;font-size:14px;font-weight:900}
+
+  /* Grid cards */
+  .grid{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:12px;
+  }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    text-decoration:none;
+    color:inherit;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:16px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    position:relative;
+    overflow:hidden;
+    transition: transform .12s ease, filter .12s ease;
+  }
+  .card:hover{transform: translateY(-1px); filter: brightness(.995);}
+  .icon{
+    width:46px;height:46px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    background: rgba(199,154,18,.14);
+    border: 1px solid rgba(199,154,18,.22);
+    font-size:20px;
+  }
+  .meta .title{font-weight:900;letter-spacing:.2px}
+  .meta .desc{margin-top:6px;font-size:12px;color:var(--muted);line-height:1.45}
+  .tag{
+    position:absolute; right:12px; top:12px;
+    font-size:11px; font-weight:900;
+    padding:6px 10px;
+    border-radius:999px;
+    background: rgba(199,154,18,.18);
+    border: 1px solid rgba(199,154,18,.25);
+    color:#111;
+  }
+  .wide{grid-column:1 / -1; align-items:center;}
+  .wide .meta .desc{max-width:680px;}
+
+  /* Footer */
+  .foot{margin-top:14px;text-align:center;color:var(--muted);font-size:12px;}
+  .foot b{color:#111;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="mark">AD</div>
+        <div>
+          <h1>AD ADESIVOS</h1>
+          <div class="sub">Painel do sistema • Fluxo • Orçamentos • Recibos • Clientes</div>
+        </div>
+      </div>
+
+      <div class="userbar" id="userbar" style="display:none;">
+        <div class="pill" id="who">—</div>
+        <div class="pill" id="role">—</div>
+        <button class="btn" id="btnUsers" style="display:none;">👥 Usuários</button>
+        <button class="btn btnGold" id="btnLogout">Sair</button>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div>
+        <h2>Atalhos rápidos</h2>
+        <p>
+          Acesse as áreas do sistema com 1 clique. Os lançamentos registram o usuário logado.
+          <br><b>Dica:</b> faça <b>Backup</b> no fim do dia.
+        </p>
+      </div>
+      <div class="quick">
+        <div class="qItem"><div class="k">Orçamentos</div><div class="v" id="qOrc">—</div></div>
+        <div class="qItem"><div class="k">Recibos</div><div class="v" id="qRec">—</div></div>
+        <div class="qItem"><div class="k">Clientes</div><div class="v" id="qCli">—</div></div>
+        <div class="qItem"><div class="k">Saldo do Caixa</div><div class="v" id="qSaldo">—</div></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <a class="card" href="fluxo.html" aria-label="Fluxo de Caixa">
+        <div class="tag">Caixa</div>
+        <div class="icon">💰</div>
+        <div class="meta">
+          <div class="title">Fluxo de Caixa</div>
+          <div class="desc">Entradas/saídas por material, forma de pagamento e funcionário.</div>
+        </div>
+      </a>
+
+      <a class="card" href="orcamento_novo.html?v=1" aria-label="Gerador de Orçamento">
+        <div class="tag">Orçamento</div>
+        <div class="icon">🧾</div>
+        <div class="meta">
+          <div class="title">Gerador de Orçamento</div>
+          <div class="desc">Itens, desconto, observações, salvar, histórico e botão PDF.</div>
+        </div>
+      </a>
+
+      <a class="card" href="recibo_novo.html?v=1" aria-label="Recibo">
+        <div class="tag">Recibo</div>
+        <div class="icon">🧾</div>
+        <div class="meta">
+          <div class="title">Recibo</div>
+          <div class="desc">Emissão com histórico + PDF direto do histórico.</div>
+        </div>
+      </a>
+
+      <a class="card" href="clientes.html" aria-label="Clientes">
+        <div class="tag">Clientes</div>
+        <div class="icon">👤</div>
+        <div class="meta">
+          <div class="title">Clientes</div>
+          <div class="desc">Cadastro e pesquisa. Cliente é salvo automaticamente no orçamento.</div>
+        </div>
+      </a>
+
+      <a class="card wide" href="backup.html" aria-label="Backup do Sistema">
+        <div class="tag">Segurança</div>
+        <div class="icon">🗄️</div>
+        <div class="meta">
+          <div class="title">Backup do Sistema</div>
+          <div class="desc">Exportar/importar dados para não perder informações ou trocar de computador.</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="foot"><b>AD ADESIVOS</b> • sistema interno</div>
+  </div>
+
+<script>
+  // Login guard
+  const K_SESSION='ad_session';
+  function getSession(){ try{ return JSON.parse(localStorage.getItem(K_SESSION)||'null'); }catch(e){ return null; } }
+  function clearSession(){ localStorage.removeItem(K_SESSION); }
+
+  const s = getSession();
+  if(!s || !s.user){ window.location.href = "login_preto_amarelo.html"; }
+  else {
+    document.getElementById('userbar').style.display = "";
+    document.getElementById('who').textContent = "Logado: " + (s.nome || s.user);
+    document.getElementById('role').textContent = (s.role === 'admin') ? "Perfil: Chefe" : "Perfil: Funcionário";
+    const btnUsers = document.getElementById('btnUsers');
+    if(s.role === 'admin'){ btnUsers.style.display = ""; btnUsers.onclick = () => window.location.href="usuarios.html"; }
+    document.getElementById('btnLogout').onclick = () => {
+      if(!confirm("Sair do sistema?")) return;
+      clearSession();
+      window.location.href="login_preto_amarelo.html";
+    };
+  }
+
+  // Quick stats (best-effort)
+  function safeGet(key, fallback){ try{ return JSON.parse(localStorage.getItem(key) || fallback); }catch(e){ return JSON.parse(fallback); } }
+  const orcs = safeGet('ad_orcamentos', '[]');
+  const recs = safeGet('ad_recibos', '[]');
+  const clis = safeGet('ad_clientes', '[]');
+  const fluxo = safeGet('ad_fluxo', '[]');
+
+  document.getElementById('qOrc').textContent = orcs.length || 0;
+  document.getElementById('qRec').textContent = recs.length || 0;
+  document.getElementById('qCli').textContent = clis.length || 0;
+
+  let saldo = 0;
+  try{
+    fluxo.forEach(x => {
+      const v = Number(x.valor)||0;
+      if((x.tipo||'').toLowerCase()==='entrada') saldo += v; else saldo -= v;
+    });
+  }catch(e){ saldo = 0; }
+
+  function brl(n){ try{ return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }catch(e){ return 'R$ ' + (Number(n)||0).toFixed(2).replace('.',','); } }
+  document.getElementById('qSaldo').textContent = brl(saldo);
+</script>
+</body>
+</html>

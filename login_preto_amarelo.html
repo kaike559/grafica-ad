@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login - AD ADESIVOS</title>
+<style>
+  :root{
+    --text:#111827;
+    --muted:#6b7280;
+    --card:#ffffff;
+    --line:rgba(255,255,255,.35);
+    --glass:rgba(255,255,255,.18);
+    --primary:#c79a12;
+    --btn:#c79a12;
+    --btn2:#a67f0e;
+    --danger:#b91c1c;
+    --shadow: 0 22px 60px rgba(17,24,39,.25);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px 14px;
+    background:
+      radial-gradient(1200px 800px at 70% 10%, rgba(255,255,255,.18), transparent 55%),
+      radial-gradient(900px 600px at 20% 80%, rgba(255,255,255,.10), transparent 60%),
+      linear-gradient(180deg, #0b0b0c 0%, #121214 45%, #1a1a1d 100%);
+    overflow:hidden;
+  }
+  /* Stars */
+  .stars, .stars2{
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.8), transparent 55%),
+      radial-gradient(2px 2px at 80px 120px, rgba(255,255,255,.6), transparent 55%),
+      radial-gradient(2px 2px at 180px 90px, rgba(255,255,255,.7), transparent 55%),
+      radial-gradient(2px 2px at 260px 200px, rgba(255,255,255,.55), transparent 55%),
+      radial-gradient(2px 2px at 340px 60px, rgba(255,255,255,.8), transparent 55%),
+      radial-gradient(2px 2px at 420px 160px, rgba(255,255,255,.65), transparent 55%);
+    background-size: 520px 260px;
+    opacity:.55;
+    pointer-events:none;
+  }
+  .stars2{
+    opacity:.25;
+    filter: blur(0.2px);
+    transform: scale(1.15);
+  }
+
+  .shell{
+    width: min(980px, 100%);
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap:18px;
+    align-items:stretch;
+  }
+  @media (max-width:920px){ .shell{grid-template-columns:1fr; max-width:520px} }
+
+  .hero{
+    border-radius: var(--radius);
+    overflow:hidden;
+    position:relative;
+    box-shadow: var(--shadow);
+    background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+    border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(10px);
+  }
+  .heroTop{
+    height: 240px;
+    background:
+      radial-gradient(140px 120px at 78% 26%, rgba(255,255,255,.30), rgba(255,255,255,0) 65%),
+      linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 100%);
+    position:relative;
+  }
+  .moon{
+    position:absolute; right:38px; top:34px;
+    width:76px; height:76px; border-radius:999px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), rgba(255,255,255,.28) 55%, rgba(255,255,255,.06) 72%);
+    filter: drop-shadow(0 10px 22px rgba(0,0,0,.25));
+  }
+  .shoot{
+    position:absolute; left:40px; top:64px;
+    width:140px; height:2px; border-radius:2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.85), rgba(255,255,255,0));
+    transform: rotate(-18deg);
+    opacity:.75;
+  }
+  .mount{
+    position:absolute; left:-40px; right:-40px; bottom:-60px; height:220px;
+    background:
+      radial-gradient(180px 120px at 30% 55%, rgba(255,255,255,.10), transparent 65%),
+      linear-gradient(145deg, rgba(10,10,12,.95), rgba(18,18,20,.92));
+    clip-path: polygon(0 72%, 18% 56%, 32% 70%, 48% 44%, 63% 65%, 78% 38%, 92% 62%, 100% 50%, 100% 100%, 0 100%);
+  }
+  .mount2{
+    position:absolute; left:-40px; right:-40px; bottom:-70px; height:240px;
+    background: linear-gradient(145deg, rgba(199,154,18,.25), rgba(199,154,18,.18));
+    clip-path: polygon(0 82%, 14% 62%, 28% 82%, 44% 50%, 58% 78%, 74% 46%, 88% 72%, 100% 55%, 100% 100%, 0 100%);
+    opacity:.95;
+    mix-blend-mode: screen;
+  }
+  .heroBody{
+    padding:18px 18px 16px;
+    color:#fff;
+  }
+  .brand{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .brand .name{font-weight:900;letter-spacing:.2px}
+  .brand .tag{font-size:12px; opacity:.85; border:1px solid rgba(255,255,255,.25); padding:6px 10px; border-radius:999px;}
+  .heroBody .note{font-size:12px; opacity:.9; line-height:1.5;}
+
+  .card{
+    border-radius: var(--radius);
+    overflow:hidden;
+    box-shadow: var(--shadow);
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(255,255,255,.35);
+  }
+  .cardInner{padding:18px}
+  h1{margin:0;font-size:24px;letter-spacing:.2px}
+  .subtitle{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.5}
+
+  .tabs{display:flex; gap:8px; margin-top:14px}
+  .tabBtn{
+    flex:1;
+    border:none;
+    border-radius:12px;
+    padding:10px 12px;
+    font-weight:900;
+    cursor:pointer;
+    background: rgba(199,154,18,.10);
+    color:#111;
+  }
+  .tabBtn.active{
+    background: rgba(199,154,18,.18);
+    outline: 2px solid rgba(199,154,18,.22);
+  }
+
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 6px}
+  .field{position:relative}
+  .field .icon{
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    width:34px; height:34px; border-radius:999px;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(199,154,18,.12);
+    color:#111;
+    font-weight:900;
+    font-size:14px;
+  }
+  input{
+    width:100%;
+    border:1px solid rgba(17,24,39,.10);
+    border-radius:999px;
+    padding:12px 14px 12px 54px;
+    outline:none;
+    font-size:14px;
+    background:#fff;
+  }
+  input:focus{border-color: rgba(199,154,18,.45); box-shadow:0 0 0 4px rgba(199,154,18,.12);}
+
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  @media (max-width:520px){ .row{grid-template-columns:1fr} }
+
+  .btn{
+    width:100%;
+    border:none;
+    border-radius:12px;
+    padding:12px 14px;
+    font-weight:900;
+    cursor:pointer;
+    margin-top:12px;
+  }
+  .btnPrimary{background: linear-gradient(180deg, var(--btn) 0%, var(--btn2) 100%); color:#fff;}
+  .btnGhost{background:#fff; color:#111; border:1px solid rgba(199,154,18,.25);}
+  .links{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap}
+  .links a{color:#111; font-size:12px; font-weight:900; text-decoration:none; opacity:.9}
+  .links a:hover{opacity:1}
+
+  .error{font-size:12px;color:var(--danger);margin-top:10px;display:none;line-height:1.35}
+  .error.show{display:block}
+  .smallhelp{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+
+  .footer{padding:12px 18px;border-top:1px solid rgba(17,24,39,.06);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .badge{border:1px solid rgba(17,24,39,.10);padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.75);}
+
+  .field{ position:relative; }
+  .togglePass{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    background:transparent;
+    border:0;
+    cursor:pointer;
+    font-size:18px;
+    color:rgba(255,255,255,.85);
+    padding:6px;
+  }
+  .togglePass:focus{ outline:2px solid rgba(255,255,255,.5); border-radius:10px; }
+
+</style>
+</head>
+<body>
+  <div class="stars"></div><div class="stars2"></div>
+
+  <div class="shell">
+    <div class="hero">
+      <div class="heroTop">
+        <div class="moon"></div>
+        <div class="shoot"></div>
+        <div class="mount"></div>
+        <div class="mount2"></div>
+      </div>
+      <div class="heroBody">
+        <div class="brand">
+          <div class="name">AD ADESIVOS</div>
+          <div class="tag">Sistema interno</div>
+        </div>
+        <div class="note">
+          Controle de caixa, orçamento, recibo e clientes.<br>
+          <b>Dica:</b> faça backup regularmente.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardInner">
+        <h1>Login</h1>
+        <div class="subtitle">Entre com seu usuário e senha. No primeiro uso, crie o acesso do Chefe.</div>
+
+        <div class="tabs">
+          <button class="tabBtn active" id="tabLogin" type="button">Entrar</button>
+          <button class="tabBtn" id="tabSetup" type="button">Primeiro acesso</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="loginBox" style="margin-top:6px;">
+          <label>Usuário</label>
+          <div class="field">
+            <div class="icon">👤</div>
+            <input id="user" placeholder="Ex: admin" autocomplete="username" />
+          </div>
+          <label>Senha</label>
+          <div class="field">
+            <div class="icon">🔒</div>
+            <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+            <button class="togglePass" id="togglePass" type="button" aria-label="Mostrar senha">👁️</button>
+          </div>
+
+          <div class="links">
+            <span class="badge">Acesso local</span>
+            <a href="#" onclick="alert('Peça ao Chefe para redefinir sua senha na tela Usuários.'); return false;">Esqueci a senha</a>
+          </div>
+
+          <button class="btn btnPrimary" id="btnLogin" type="button">Login</button>
+          <div class="error" id="errLogin"></div>
+        </div>
+
+        <!-- SETUP -->
+        <div id="firstSetup" style="display:none;margin-top:6px;">
+          <div class="smallhelp"><b>Primeiro acesso:</b> crie o usuário do Chefe (admin). Depois você poderá criar funcionários.</div>
+
+          <div class="row">
+            <div>
+              <label>Nome do chefe</label>
+              <div class="field">
+                <div class="icon">👑</div>
+                <input id="adminNome" placeholder="Ex: AD Adesivos" />
+              </div>
+            </div>
+            <div>
+              <label>Usuário (login)</label>
+              <div class="field">
+                <div class="icon">🆔</div>
+                <input id="adminUser" placeholder="admin" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Senha</label>
+              <div class="field">
+                <div class="icon">🔑</div>
+                <input id="adminPass" type="password" placeholder="Crie uma senha" />
+              </div>
+            </div>
+            <div>
+              <label>Confirmar senha</label>
+              <div class="field">
+                <div class="icon">✅</div>
+                <input id="adminPass2" type="password" placeholder="Repita a senha" />
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btnPrimary" id="btnCreateAdmin" type="button">Criar chefe e entrar</button>
+          <div class="error" id="errSetup"></div>
+        </div>
+
+        <div class="smallhelp">
+          O Chefe pode gerenciar funcionários em <b>👥 Usuários</b> dentro do painel.
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>AD ADESIVOS • Login</span>
+        <span class="badge">v4</span>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+/**
+ * Login (localStorage) — sem servidor.
+ * Melhorias:
+ * - Corrige criação do Admin (primeiro acesso)
+ * - Compatibilidade com hash antigo (base64) + novo (SHA-256)
+ * - Bloqueio temporário após várias tentativas (anti força-bruta)
+ * - Sessão com expiração (8h) e dados mínimos
+ * - Mostrar/ocultar senha + Enter para entrar
+ */
+const K_USERS = 'ad_users';
+const K_SESSION = 'ad_session';
+const K_LOCK = 'ad_login_lock'; // { "<userLower>": {fails, lockUntil} }
+
+const SESSION_HOURS = 8;
+const MAX_FAILS = 5;
+const LOCK_MINUTES = 5;
+
+function nowMs(){ return Date.now(); }
+function readJSON(key, fallback){
+  try{ return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; }
+  catch(e){ return fallback; }
+}
+function writeJSON(key, value){
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getUsers(){ return readJSON(K_USERS, []); }
+function setUsers(arr){ writeJSON(K_USERS, arr); }
+
+function setSession(s){ writeJSON(K_SESSION, s); }
+
+function oldHash(p){ // compatibilidade com versão antiga (base64)
+  return btoa(unescape(encodeURIComponent(p)));
+}
+
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function normalizeUser(u){ return (u||'').trim().toLowerCase(); }
+
+function getLockMap(){ return readJSON(K_LOCK, {}); }
+function setLockMap(m){ writeJSON(K_LOCK, m); }
+
+function lockInfoFor(userLower){
+  const m = getLockMap();
+  return m[userLower] || { fails: 0, lockUntil: 0 };
+}
+function updateLock(userLower, info){
+  const m = getLockMap();
+  m[userLower] = info;
+  setLockMap(m);
+}
+
+function humanTime(ms){
+  const s = Math.max(0, Math.ceil(ms/1000));
+  const m = Math.ceil(s/60);
+  return m <= 1 ? '1 minuto' : `${m} minutos`;
+}
+
+function showErr(el, msg){
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErr(el){
+  el.textContent = '';
+  el.classList.remove('show');
+}
+
+function hasAdmin(){
+  return getUsers().some(u => u.role === 'admin');
+}
+
+// ------- UI helpers -------
+const tabLogin = document.getElementById('tabLogin');
+const tabSetup = document.getElementById('tabSetup');
+const firstSetup = document.getElementById('firstSetup');
+const loginBox = document.getElementById('loginBox');
+
+function setTab(which){
+  const isSetup = which === 'setup';
+  tabLogin.classList.toggle('active', !isSetup);
+  tabSetup.classList.toggle('active', isSetup);
+  firstSetup.style.display = isSetup ? '' : 'none';
+  loginBox.style.display = isSetup ? 'none' : '';
+}
+
+tabLogin.addEventListener('click', ()=>setTab('login'));
+tabSetup.addEventListener('click', ()=>setTab('setup'));
+
+// Se não existir admin, abrir automaticamente a aba de setup
+if(!hasAdmin()) setTab('setup');
+
+// Mostrar/ocultar senha (login)
+const togglePass = document.getElementById('togglePass');
+if(togglePass){
+  togglePass.addEventListener('click', ()=>{
+    const pass = document.getElementById('pass');
+    const isPwd = pass.type === 'password';
+    pass.type = isPwd ? 'text' : 'password';
+    togglePass.textContent = isPwd ? '🙈' : '👁️';
+    togglePass.setAttribute('aria-label', isPwd ? 'Ocultar senha' : 'Mostrar senha');
+  });
+}
+
+// Enter para entrar
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){
+    const isSetupOpen = firstSetup.style.display !== 'none' && firstSetup.offsetParent !== null;
+    if(isSetupOpen){
+      document.getElementById('btnCreateAdmin')?.click();
+    }else{
+      document.getElementById('btnLogin')?.click();
+    }
+  }
+});
+
+// ------- Login -------
+document.getElementById('btnLogin').addEventListener('click', async ()=>{
+  const userEl = document.getElementById('user');
+  const passEl = document.getElementById('pass');
+  const err = document.getElementById('err');
+
+  clearErr(err);
+
+  const uRaw = userEl.value;
+  const pRaw = passEl.value;
+
+  if(!uRaw.trim() || !pRaw){
+    return showErr(err, 'Informe usuário e senha');
+  }
+
+  const u = normalizeUser(uRaw);
+  const info = lockInfoFor(u);
+
+  if(info.lockUntil && info.lockUntil > nowMs()){
+    const left = info.lockUntil - nowMs();
+    return showErr(err, `Muitas tentativas. Tente novamente em ${humanTime(left)}.`);
+  }
+
+  const users = getUsers();
+  const found = users.find(x => normalizeUser(x.user) === u);
+
+  let ok = false;
+  if(found){
+    if(found.algo === 'sha256'){
+      ok = (found.passHash === await sha256(pRaw));
+    }else{
+      // compatibilidade com versões antigas
+      ok = (found.passHash === oldHash(pRaw)) || (found.senha === pRaw);
+    }
+  }
+
+  if(!ok){
+    const fails = (info.fails || 0) + 1;
+    const locked = fails >= MAX_FAILS;
+    updateLock(u, {
+      fails,
+      lockUntil: locked ? (nowMs() + LOCK_MINUTES*60*1000) : 0
+    });
+    return showErr(err, locked
+      ? `Muitas tentativas. Login bloqueado por ${LOCK_MINUTES} minutos.`
+      : 'Usuário ou senha inválidos'
+    );
+  }
+
+  // reset lock on success
+  updateLock(u, { fails: 0, lockUntil: 0 });
+
+  const exp = new Date(nowMs() + SESSION_HOURS*60*60*1000).toISOString();
+  setSession({
+    user: found.user,
+    nome: found.nome || found.user,
+    role: found.role || 'user',
+    startedAt: new Date().toISOString(),
+    exp
+  });
+
+  // Redirect
+  location.href = "index.html";
+});
+
+// ------- Primeiro acesso: criar admin -------
+document.getElementById('btnCreateAdmin').addEventListener('click', async ()=>{
+  const err = document.getElementById('errSetup');
+  clearErr(err);
+
+  const nome = (document.getElementById('adminNome').value || '').trim();
+  const user = (document.getElementById('adminUser').value || '').trim();
+  const pass1 = document.getElementById('adminPass').value || '';
+  const pass2 = document.getElementById('adminPass2').value || '';
+
+  if(hasAdmin()){
+    return showErr(err, 'Já existe um chefe (admin). Faça login normalmente.');
+  }
+  if(!nome || !user || !pass1 || !pass2){
+    return showErr(err, 'Preencha todos os campos.');
+  }
+  if(pass1.length < 6){
+    return showErr(err, 'A senha precisa ter pelo menos 6 caracteres.');
+  }
+  if(pass1 !== pass2){
+    return showErr(err, 'As senhas não conferem.');
+  }
+
+  const users = getUsers();
+  if(users.some(u => normalizeUser(u.user) === normalizeUser(user))){
+    return showErr(err, 'Esse usuário já existe. Escolha outro login.');
+  }
+
+  users.push({
+    user,
+    nome,
+    role: 'admin',
+    algo: 'sha256',
+    passHash: await sha256(pass1),
+    createdAt: new Date().toISOString()
+  });
+  setUsers(users);
+
+  // loga automaticamente
+  const exp = new Date(nowMs() + SESSION_HOURS*60*60*1000).toISOString();
+  setSession({
+    user,
+    nome,
+    role: 'admin',
+    startedAt: new Date().toISOString(),
+    exp
+  });
+
+  location.href = "index.html";
+});
+</script>
+
+</body>
+</html>
